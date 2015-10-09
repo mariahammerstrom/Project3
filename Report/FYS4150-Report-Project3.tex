@@ -43,10 +43,52 @@
 \begin{multicols}{2}
 
 \section{Introduction}
+In this project we will determine the ground state correlation energy between two electrons in an helium atom by calculating a six-dimensional integral that appears in many quantum mechanical applications. The methods we will use are Gauss-Legendre and Gauss-Laguerre quadrature and Monte-Carlo integration. 
+
+We assume that the wave function of each electron can be modeled like the single-particle wave function of an electron in the hydrogen atom. The single-particle wave function  for an electron $i$ in the $1s$ state  is given in terms of a dimensionless variable    (the wave function is not properly normalized)
+
+\begin{equation}
+	{\bf r}_i =  x_i {\bf e}_x + y_i {\bf e}_y +z_i {\bf e}_z ,
+\end{equation}
+as
+
+\begin{equation}
+	\psi_{1s}({\bf r}_i)  =   e^{-\alpha r_i},
+\end{equation}
+where $\alpha$ is a parameter and 
+
+\begin{equation}
+	r_i = \sqrt{x_i^2+y_i^2+z_i^2}.
+\end{equation}
+We will fix $\alpha=2$, which should correspond to the charge of the helium atom $Z=2$. 
+
+The ansatz for the wave function for two electrons is then given by the product of two 
+so-called $1s$ wave functions as 
+
+\begin{equation}
+	\Psi({\bf r}_1,{\bf r}_2)  =   e^{-\alpha (r_1+r_2)}.
+\end{equation}
+
+The integral we need to solve is the quantum mechanical expectation value of the correlation energy between two electrons which repel each other via the classical Coulomb interaction, namely
+
+\begin{equation}\label{eq:correlationenergy}
+	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} d{\bf r}_1d{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
+\end{equation}
+This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2$.
+
+
 ...
 
 
 \section{Methods}
+
+\subsection{Gauss-Legendre}
+...
+
+\subsection{Gauss-Laguerre}
+...
+
+\subsection{Monte-Carlo}
 ...
 
 
