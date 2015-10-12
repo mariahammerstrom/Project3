@@ -61,7 +61,7 @@ int main()
      double *xgl = new double [N+1];
      double *wgl = new double [N+1];
 
-     double alf = 2.0;
+     double alf = 1.0;
      gauss_laguerre(xgl,wgl,N,alf);
 
      // Evaluate the integral with the Gauss-Laguerre method
@@ -142,12 +142,14 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
 
 
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
+    double alpha = 2.0;
     double numerator = r1*r1*r2*r2;
     double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    double expr = -2*alpha*(r1+r2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
 
     if(deno <pow(10.,-6.)){return 0;}
-    else {return numerator/deno;}
+    else {return numerator*exp(expr)/deno;}
 }
 
 
