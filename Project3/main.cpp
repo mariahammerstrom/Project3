@@ -101,13 +101,19 @@ int main()
 
 
      // FINAL OUTPUT
-     cout  << setiosflags(ios::showpoint | ios::uppercase);
-     cout << "Gaussian-Legendre quad = "<< setw(20) << setprecision(15)  << int_gauss << endl;
-     cout << "Gaussian-Legendre improved quad = " << setw(20) << setprecision(15) << int_gausslegimproved << endl;
-     cout << "Gaussian-Laguerre quad = " << setw(20) << setprecision(15) << int_gausslag << endl;
-     cout << "Correct answer = " << 5*3.14*3.14/(16*16) << endl;
+     cout << "INPUT:" << endl;
+     cout << "n = " << n << endl;
+     cout << "a = " << a << " (lower limit)" << endl;
+     cout << "b = " << b << " (upper limit)" << endl;
 
-     cout << "MC Integral = " << MCint << " Exact = " << M_PI << " Variance = " << variance << endl;
+
+     cout << endl << "RESULTS:" << endl;
+     cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
+     cout << "Gauss-Legendre impr. " << "\t" << setprecision(15) << int_gausslegimproved << endl;
+     cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
+     cout << "Monte Carlo " << "\t" << MCint << " (variance = " << variance << ")"<< endl;
+
+     cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
      // Clear memory
      delete [] x;
@@ -121,8 +127,7 @@ int main()
 // End of main program
 
 
-//  DEFINITION OF FUNCTIONS
-
+// DEFINITION OF FUNCTIONS:
 
 // INTEGRAL TO BE SOLVED
 double int_function(double x,double alpha)
