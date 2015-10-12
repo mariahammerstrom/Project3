@@ -20,6 +20,7 @@ using namespace std;
 
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2);
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
+//double int_mc(double,double);
 void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
 double gammln(double);
@@ -78,26 +79,32 @@ int main()
              }
 
 
-    /*
-     // MONTE-CARLO
+/*
+     // MONTE-CARLO; NB: Gir ulike svar pga rand()
      double MCint, MCintsqr2, fx;
      MCint = MCintsqr2 = 0.;
      double invers_period = 1./RAND_MAX; // initialise the random number generator
      srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
-     for ( int i = 1; i <= n; i++){
-         double x = double(rand())*invers_period;
-         fx = int_function(x,alpha);
+     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
+     for ( int i = 1; i <= N; i++){
+         double x1 = double(rand())*invers_period;
+         double x2 = double(rand())*invers_period;
+         double y1 = double(rand())*invers_period;
+         double y2 = double(rand())*invers_period;
+         double z1 = double(rand())*invers_period;
+         double z2 = double(rand())*invers_period;
+         fx = int_function(x1,x2,y1,y2,z1,z2);
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
 
-     MCint = MCint/((double) n );
-     MCintsqr2 = MCintsqr2/((double) n );
+     MCint = MCint/((double) N );
+     MCintsqr2 = MCintsqr2/((double) N );
      double variance = MCintsqr2 - MCint*MCint;
-     */
 
+*/
 
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
@@ -110,9 +117,9 @@ int main()
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
      //cout << "Gauss-Legendre impr. " << "\t" << setprecision(15) << int_gausslegimproved << endl;
      cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
-     //cout << "Monte Carlo " << "\t" << MCint << " (variance = " << variance << ")"<< endl;
+     //cout << "Monte Carlo " << "\t" << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
 
-     cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
+     cout << endl << "Exact answer " << "\t" << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
      finish = clock(); // final time
      cout << endl << "Time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
@@ -151,6 +158,13 @@ double int_function_spherical(double r1,double r2,double theta1,double theta2,do
     if(deno <pow(10.,-6.)){return 0;}
     else {return numerator*exp(expr)/deno;}
 }
+/*
+//Monte Carlo
+double int_mc(double x,double a)
+{
+
+}
+*/
 
 
 
