@@ -51,7 +51,7 @@ int main()
                  for (int l = 0;l<N;l++){
                      for (int m = 0;m<N;m++){
                          for (int n = 0;n<N;n++){
-                             int_gauss+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
+                             int_gauss += w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
                   }}}}}
              }
 
@@ -74,37 +74,39 @@ int main()
                  for (int l = 0;l<N;l++){
                      for (int m = 0;m<N;m++){
                          for (int n = 0;n<N;n++){
-                             int_gausslag+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
+                             //int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
+                             int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                   }}}}}
              }
 
 
-/*
+
      // MONTE-CARLO; NB: Gir ulike svar pga rand()
-     double MCint, MCintsqr2, fx;
-     MCint = MCintsqr2 = 0.;
+     double MCint = 0; // initialize the sum
+     double MCintsqr2 = 0.;
+
      double invers_period = 1./RAND_MAX; // initialise the random number generator
      srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
-     for ( int i = 1; i <= N; i++){
+     for ( int i = 0; i <= N; i++){
          double x1 = double(rand())*invers_period;
          double x2 = double(rand())*invers_period;
          double y1 = double(rand())*invers_period;
          double y2 = double(rand())*invers_period;
          double z1 = double(rand())*invers_period;
          double z2 = double(rand())*invers_period;
-         fx = int_function(x1,x2,y1,y2,z1,z2);
+         double fx = int_function(x1,x2,y1,y2,z1,z2);
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
 
-     MCint = MCint/((double) N );
-     MCintsqr2 = MCintsqr2/((double) N );
+     MCint = MCint/((double) N);
+     MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
 
-*/
+
 
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
@@ -115,20 +117,20 @@ int main()
 
      cout << endl << "RESULTS:" << endl;
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     //cout << "Gauss-Legendre impr. " << "\t" << setprecision(15) << int_gausslegimproved << endl;
      cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
-     //cout << "Monte Carlo " << "\t" << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
+     cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
 
-     cout << endl << "Exact answer " << "\t" << "\t" << 5*M_PI*M_PI/(16*16) << endl;
+     cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
      finish = clock(); // final time
-     cout << endl << "Time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << endl << "Total time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
 
      // Clear memory
      delete [] x;
      delete [] w;
      delete [] xgl;
      delete [] wgl;
+
      return 0;
 }
 // End of main program
@@ -138,12 +140,12 @@ int main()
 
 // INTEGRAL TO BE SOLVED
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2){
-    double alpha = 2.;
-    double exp1=-2*alpha*sqrt(x1*x1+y1*y1+z1*z1);
-    double exp2=-2*alpha*sqrt(x2*x2+y2*y2+z2*z2);
-    double deno=sqrt(pow((x1-x2),2)+pow((y1-y2),2)+pow((z1-z2),2));
+    double alpha = 2.0;
+    double exp1 = -2*alpha*sqrt(x1*x1 + y1*y1 + z1*z1);
+    double exp2 = -2*alpha*sqrt(x2*x2 + y2*y2 + z2*z2);
+    double deno = sqrt(pow((x1-x2),2) + pow((y1-y2),2) + pow((z1-z2),2));
 
-    if(deno <pow(10.,-6.)){return 0;}
+    if(deno < pow(10.,-6.)){return 0;}
     else {return exp(exp1+exp2)/deno;}
     }
 
