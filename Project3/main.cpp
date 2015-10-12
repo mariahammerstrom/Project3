@@ -19,6 +19,7 @@ using namespace std;
 // FUNCTIONS
 
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2);
+double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
 void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
 double gammln(double);
@@ -28,9 +29,9 @@ int main()
 {
      clock_t start, finish; // declare start and final time for Armadillo solver
      start = clock();
-     int N = 20;
-     double a = -5.0;
-     double b = 5.0;
+     int N = 10;
+     double a = -1.0;
+     double b = 1.0;
 
 
      // GAUSS-LEGENDRE
@@ -44,12 +45,12 @@ int main()
      double int_gauss = 0.; // initialize the sum
      #pragma omp for reduction(+:int_gauss) private(i,j,k,l,m,n)
      for (int i=0;i<N;i++){
-                  for (int j = 0;j<N;j++){
-                  for (int k = 0;k<N;k++){
-                  for (int l = 0;l<N;l++){
-                  for (int m = 0;m<N;m++){
-                  for (int n = 0;n<N;n++){
-                      int_gauss+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
+         for (int j = 0;j<N;j++){
+             for (int k = 0;k<N;k++){
+                 for (int l = 0;l<N;l++){
+                     for (int m = 0;m<N;m++){
+                         for (int n = 0;n<N;n++){
+                             int_gauss+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
                   }}}}}
              }
 
@@ -60,19 +61,19 @@ int main()
      double *xgl = new double [N+1];
      double *wgl = new double [N+1];
 
-     double alf = 1.0;
+     double alf = 2.0;
      gauss_laguerre(xgl,wgl,N,alf);
 
      // Evaluate the integral with the Gauss-Laguerre method
      double int_gausslag = 0.; // initialize the sum
      #pragma omp for reduction(+:int_gausslag) private(i,j,k,l,m,n)
      for (int i=0;i<N;i++){
-                  for (int j = 0;j<N;j++){
-                  for (int k = 0;k<N;k++){
-                  for (int l = 0;l<N;l++){
-                  for (int m = 0;m<N;m++){
-                  for (int n = 0;n<N;n++){
-                      int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
+         for (int j = 0;j<N;j++){
+             for (int k = 0;k<N;k++){
+                 for (int l = 0;l<N;l++){
+                     for (int m = 0;m<N;m++){
+                         for (int n = 0;n<N;n++){
+                             int_gausslag+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                   }}}}}
              }
 
@@ -129,8 +130,7 @@ int main()
 // DEFINITION OF FUNCTIONS:
 
 // INTEGRAL TO BE SOLVED
-double int_function(double x1, double y1, double z1, double x2, double y2, double z2)
-{
+double int_function(double x1, double y1, double z1, double x2, double y2, double z2){
     double alpha = 2.;
     double exp1=-2*alpha*sqrt(x1*x1+y1*y1+z1*z1);
     double exp2=-2*alpha*sqrt(x2*x2+y2*y2+z2*z2);
@@ -139,6 +139,16 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
     if(deno <pow(10.,-6.)){return 0;}
     else {return exp(exp1+exp2)/deno;}
     }
+
+
+double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
+    double numerator = r1*r1*r2*r2;
+    double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
+
+    if(deno <pow(10.,-6.)){return 0;}
+    else {return numerator/deno;}
+}
 
 
 
