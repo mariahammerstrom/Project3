@@ -1,5 +1,6 @@
 //   This is a simple program which tests Gaussian quadrature using Legendre and Laguerre polynomials
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
 #include <fstream>
