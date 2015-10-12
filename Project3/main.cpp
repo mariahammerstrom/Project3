@@ -42,7 +42,7 @@ int main()
 
      // Evaluate the integral with the Gauss-Legendre method
      double int_gauss = 0.; // initialize the sum
-
+     #pragma omp for reduction(+:int_gauss) private(i,j,k,l,m,n)
      for (int i=0;i<N;i++){
                   for (int j = 0;j<N;j++){
                   for (int k = 0;k<N;k++){
@@ -65,7 +65,7 @@ int main()
 
      // Evaluate the integral with the Gauss-Laguerre method
      double int_gausslag = 0.; // initialize the sum
-
+     #pragma omp for reduction(+:int_gausslag) private(i,j,k,l,m,n)
      for (int i=0;i<N;i++){
                   for (int j = 0;j<N;j++){
                   for (int k = 0;k<N;k++){
