@@ -16,7 +16,7 @@ using namespace std;
 
 // FUNCTIONS
 
-double int_function(double x,double alpha);
+double int_function(double x1, double y1, double z1, double x2, double y2, double z2);
 void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
 double gammln(double);
@@ -24,62 +24,56 @@ double gammln(double);
 
 int main()
 {
-     int n = 100;
-     double a = -50;
-     double b = 50;
-     double alpha = 2.0;
+     int N = 20;
+     double a = -5.0;
+     double b = 5.0;
 
 
      // GAUSS-LEGENDRE
      // Mesh points weights and function values
-     double *x = new double [n];
-     double *w = new double [n];
+     double *x = new double [N];
+     double *w = new double [N];
 
-     gauleg(a,b,x,w,n); // mesh points and weights
+     gauleg(a,b,x,w,N); // mesh points and weights
 
      // Evaluate the integral with the Gauss-Legendre method
      double int_gauss = 0.; // initialize the sum
 
-     for ( int i = 0;  i < n; i++){
-        int_gauss+=w[i]*int_function(x[i],alpha);
-     }
+     for (int i=0;i<N;i++){
+                  for (int j = 0;j<N;j++){
+                  for (int k = 0;k<N;k++){
+                  for (int l = 0;l<N;l++){
+                  for (int m = 0;m<N;m++){
+                  for (int n = 0;n<N;n++){
+                      int_gauss+=w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
+                  }}}}}
+             }
 
-     // Improved Gauss-Legendre, mapping of x \in [-1,1] to x \in [0, infinity)
-     double *r = new double [n];
-     double *s = new double [n];
-
-     // Evaluate the integral with the improved Gauss-Legendre method. Mesh points with a tangent mapping.
-     gauleg(-1.0, 1.0,x,w, n);
-     double pi_4 = acos(-1.0)*0.25;
-
-     for ( int i = 0;  i < n; i++){
-       double xx=pi_4*(x[i]+1.0);
-       r[i]= tan(xx);
-       s[i]=pi_4/(cos(xx)*cos(xx))*w[i];
-     }
-
-     double int_gausslegimproved = 0.;
-     for ( int i = 0;  i < n; i++){
-       int_gausslegimproved += s[i]*int_function(r[i],alpha);
-     }
 
 
      // GAUSS-LAGUERRE
      // Mesh points weights and function values
-     double *xgl = new double [n+1];
-     double *wgl = new double [n+1];
+     double *xgl = new double [N+1];
+     double *wgl = new double [N+1];
 
      double alf = 1.0;
-     gauss_laguerre(xgl,wgl,n,alf);
+     gauss_laguerre(xgl,wgl,N,alf);
 
      // Evaluate the integral with the Gauss-Laguerre method
      double int_gausslag = 0.; // initialize the sum
-     for ( int i = 1;  i <= n; i++){
-       int_gausslag += wgl[i];//*sin(xgl[i]);
-     }
+
+     for (int i=0;i<N;i++){
+                  for (int j = 0;j<N;j++){
+                  for (int k = 0;k<N;k++){
+                  for (int l = 0;l<N;l++){
+                  for (int m = 0;m<N;m++){
+                  for (int n = 0;n<N;n++){
+                      int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
+                  }}}}}
+             }
 
 
-
+    /*
      // MONTE-CARLO
      double MCint, MCintsqr2, fx;
      MCint = MCintsqr2 = 0.;
@@ -97,21 +91,21 @@ int main()
      MCint = MCint/((double) n );
      MCintsqr2 = MCintsqr2/((double) n );
      double variance = MCintsqr2 - MCint*MCint;
-
+     */
 
 
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
-     cout << "n = " << n << endl;
+     cout << "N = " << N << endl;
      cout << "a = " << a << " (lower limit)" << endl;
      cout << "b = " << b << " (upper limit)" << endl;
 
 
      cout << endl << "RESULTS:" << endl;
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     cout << "Gauss-Legendre impr. " << "\t" << setprecision(15) << int_gausslegimproved << endl;
+     //cout << "Gauss-Legendre impr. " << "\t" << setprecision(15) << int_gausslegimproved << endl;
      cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
-     cout << "Monte Carlo " << "\t" << MCint << " (variance = " << variance << ")"<< endl;
+     //cout << "Monte Carlo " << "\t" << MCint << " (variance = " << variance << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
@@ -120,8 +114,6 @@ int main()
      delete [] w;
      delete [] xgl;
      delete [] wgl;
-     delete [] s;
-     delete [] r;
      return 0;
 }
 // End of main program
@@ -130,11 +122,16 @@ int main()
 // DEFINITION OF FUNCTIONS:
 
 // INTEGRAL TO BE SOLVED
-double int_function(double x,double alpha)
+double int_function(double x1, double y1, double z1, double x2, double y2, double z2)
 {
-  double value = exp(-2*alpha*x);
-  return value;
-}
+    double alpha = 2.;
+    double exp1=-2*alpha*sqrt(x1*x1+y1*y1+z1*z1);
+    double exp2=-2*alpha*sqrt(x2*x2+y2*y2+z2*z2);
+    double deno=sqrt(pow((x1-x2),2)+pow((y1-y2),2)+pow((z1-z2),2));
+
+    if(deno <pow(10.,-6.)){return 0;}
+    else {return exp(exp1+exp2)/deno;}
+    }
 
 
 
@@ -144,8 +141,7 @@ double int_function(double x,double alpha)
  * of length n of the Gauss--Legendre n--point quadrature formulae.
 */
 
-void gauleg(double x1, double x2, double x[], double w[], int n)
-{
+void gauleg(double x1, double x2, double x[], double w[], int n){
    int         m,j,i;
    double      z1,z,xm,xl,pp,p3,p2,p1;
    double      const  pi = 3.14159265359;
