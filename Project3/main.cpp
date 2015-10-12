@@ -7,7 +7,8 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <stdio.h>
-//#include <armadillo>
+#include <time.h>
+
 #define EPS 3.0e-14
 #define MAXIT 10
 #define ZERO 1.0E-10
@@ -25,6 +26,8 @@ double gammln(double);
 
 int main()
 {
+     clock_t start, finish; // declare start and final time for Armadillo solver
+     start = clock();
      int N = 20;
      double a = -5.0;
      double b = 5.0;
@@ -109,6 +112,9 @@ int main()
      //cout << "Monte Carlo " << "\t" << MCint << " (variance = " << variance << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
+
+     finish = clock(); // final time
+     cout << endl << "Time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
 
      // Clear memory
      delete [] x;
