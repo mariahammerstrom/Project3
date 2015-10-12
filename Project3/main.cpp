@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <stdio.h>
-#include <armadillo>
+//#include <armadillo>
 #define EPS 3.0e-14
 #define MAXIT 10
 #define ZERO 1.0E-10
