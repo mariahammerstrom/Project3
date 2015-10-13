@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <random>
 
 #define EPS 3.0e-14
 #define MAXIT 10
@@ -30,10 +31,14 @@ int main()
 {
      clock_t start, finish; // declare start and final time for Armadillo solver
      start = clock();
-     int N = 10000000;
+     //int N = 1000000;
      double a = -1.0;
      double b = 1.0;
 /*
+     int N = 40;
+     double a = -3.0;
+     double b = 3.0;
+
      // GAUSS-LEGENDRE
      // Mesh points weights and function values
      double *x = new double [N];
@@ -55,7 +60,7 @@ int main()
              }
 
 
-
+    *//*
      // GAUSS-LAGUERRE
      // Mesh points weights and function values
      double *xgl = new double [N+1];
@@ -73,45 +78,49 @@ int main()
                  for (int l = 0;l<N;l++){
                      for (int m = 0;m<N;m++){
                          for (int n = 0;n<N;n++){
-                             //int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                              int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                   }}}}}
              }
 
-*//*
+
+*/
      // MONTE-CARLO; NB: Gir ulike svar pga rand()
      double MCint = 0; // initialize the sum
      double MCintsqr2 = 0.;
-
-     double invers_period = 1./RAND_MAX; // initialise the random number generator
-     srand(time(NULL)); // This produces the so-called seed in MC jargon
+     int N = 100000;
+     //double invers_period = 1./RAND_MAX; // initialise the random number generator
+     //srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
-     #pragma omp for reduction(+:MCint,MCintsqr2) private(i)
+     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
+     default_random_engine generator;
+     uniform_real_distribution<double> distribution(0.0,1.0);
+/*
+     int under = 0;
      for ( int i = 0; i <= N; i++){
-         double x1 = -double(rand())*invers_period;
-         double x2 = double(rand())*invers_period;
-         double y1 = double(rand())*invers_period;
-         double y2 = double(rand())*invers_period;
-         double z1 = double(rand())*invers_period;
-         double z2 = double(rand())*invers_period;
-         double fx = int_function(x1,y1,z1,x2,y2,z2);
-         /*
-         double y1 = M_PI*double(rand())*invers_period;
-         double y2 = M_PI*double(rand())*invers_period;
-         double z1 = 2*M_PI*double(rand())*invers_period;
-         double z2 = 2*M_PI*double(rand())*invers_period;
-         double fx = int_function_spherical(x1,x2,y1,y2,z1 ,z2);
-         *//*
-         MCint += fx;
-         MCintsqr2 += fx*fx;
-     }*/
+         double x1 = distribution(generator); // old way: double(rand())*invers_period;
+         double x2 = distribution(generator);
+         double y1 = distribution(generator);
+         double y2 = distribution(generator);
+         double z1 = distribution(generator);
+         double z2 = distribution(generator);
+         double fx = int_function(x1,x2,y1,y2,z1,z2);
 
+         double f_random = distribution(generator);
+
+         if( f_random <= fx )
+         {
+            under++;
+         }
+     //double ratio = ((double)under) / ((double) N);
+     //double area = 1.0;
+     //double integral = ratio*area;
+*/
+
+     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      // Ny Monte Carlo
      double *y = new double [N];
      double fx;
-     double MCint = 0;
-     double MCintsqr2 = 0;
      //long idum = -1;
      double length = 3;
      double jacobidet = pow((2*length),6);
@@ -119,7 +128,7 @@ int main()
      for(int i=1;i<=N;i++)
      {
          for(int j=0;j<6;j++){
-             y[j] = -length + 2*length*rand()/RAND_MAX;
+             y[j] = -length + 2*length*distribution(generator);
          }
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
          MCint += fx;
@@ -128,7 +137,6 @@ int main()
      MCint = jacobidet*MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
-
 
 
      // FINAL OUTPUT
