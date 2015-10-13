@@ -30,10 +30,10 @@ int main()
 {
      clock_t start, finish; // declare start and final time for Armadillo solver
      start = clock();
-     int N = 10;
+     int N = 10000000;
      double a = -1.0;
      double b = 1.0;
-
+/*
      // GAUSS-LEGENDRE
      // Mesh points weights and function values
      double *x = new double [N];
@@ -78,7 +78,7 @@ int main()
                   }}}}}
              }
 
-
+*//*
      // MONTE-CARLO; NB: Gir ulike svar pga rand()
      double MCint = 0; // initialize the sum
      double MCintsqr2 = 0.;
@@ -102,12 +102,30 @@ int main()
          double z1 = 2*M_PI*double(rand())*invers_period;
          double z2 = 2*M_PI*double(rand())*invers_period;
          double fx = int_function_spherical(x1,x2,y1,y2,z1 ,z2);
-         */
+         *//*
+         MCint += fx;
+         MCintsqr2 += fx*fx;
+     }*/
+
+     // Ny Monte Carlo
+     double *y = new double [N];
+     double fx;
+     double MCint = 0;
+     double MCintsqr2 = 0;
+     //long idum = -1;
+     double length = 3;
+     double jacobidet = pow((2*length),6);
+     // importance sampling
+     for(int i=1;i<=N;i++)
+     {
+         for(int j=0;j<6;j++){
+             y[j] = -length + 2*length*rand()/RAND_MAX;
+         }
+         fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
-
-     MCint = MCint/((double) N);
+     MCint = jacobidet*MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
 
@@ -121,8 +139,8 @@ int main()
 
 
      cout << endl << "RESULTS:" << endl;
-     cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
+     //cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
+     //cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
@@ -131,10 +149,11 @@ int main()
      cout << endl << "Total time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
 
      // Clear memory
-     delete [] x;
-     delete [] w;
-     delete [] xgl;
-     delete [] wgl;
+     //delete [] x;
+     //delete [] w;
+     //delete [] xgl;
+     //delete [] wgl;
+     delete [] y;
 
      return 0;
 }
