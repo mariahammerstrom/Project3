@@ -74,10 +74,8 @@ The integral we need to solve is the quantum mechanical expectation value of the
 \begin{equation}\label{eq:correlationenergy}
 	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} d{\bf r}_1d{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
 \end{equation}
-This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2$.
+This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2 \approx 0.192765710958777$.
 
-
-...
 
 
 \section{Methods}
@@ -112,14 +110,40 @@ Similarly, the \textbf{Laguerre polynomials} are solutions to the differential e
 \end{equation}
 
 
-\subsection{Monte-Carlo}
-The Monte-Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte-Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations.
+\subsection{Monte Carlo}
+The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte-Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations.
 
+We also want to run the Monte Carlo method by using importance sampling. EXPLAIN.
 ... 
 
 
 \section{Results}
+
+Using \textbf{Gauss-Legendre quadrature} means solving an integral from $- \infty$ to $+ \infty$. This can however not be achieved numerically. To find out how we can substitute the infinite limits with finite limits, we plot the single-particle wave function shown in Fig.~\ref{fig:integrand}, which shows that the function $e^{-\alpha r_i}$ reaches zero at approximately $r_i \approx 3$. We therefore used the limits [-3,3].
+
+\begin{center}
+	\includegraphics[width=90mm]{integrand.png} 	
+	\captionof{figure}{The single-particle wave function $e^{-\alpha r_i}$.}
+	\label{fig:integrand}
+\end{center}
+For $N = 25$ we found a value of 0.196 for the integral, very close to the exact value of 0.193. 
+
+Then we switched to \textbf{Gauss-Laguerre quadrature} where the integral runs from zero to $\infty$. For this method, the integral was rewritten with spherical coordinates to better deal with the infinite limits. 
+
 ...
+
+The \textbf{time} taken to run the program was recorded for the various methods:
+
+\begin{center}
+\begin{tabular}{ l l l}\hline
+	Method 								& N	 		& Time (s) \\ \hline
+	Gauss-Legendre 						& - 			& - \\
+	Gauss-Laguerre 						& -			& - \\
+	Monte Carlo 							& - 			& - \\
+	Monte Carlo (with importance sampling) 		& - 			& - \\
+	\hline
+\end{tabular}
+\end{center}
 
 
 
