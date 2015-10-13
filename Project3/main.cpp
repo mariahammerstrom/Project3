@@ -34,7 +34,6 @@ int main()
      double a = -1.0;
      double b = 1.0;
 
-
      // GAUSS-LEGENDRE
      // Mesh points weights and function values
      double *x = new double [N];
@@ -80,7 +79,6 @@ int main()
              }
 
 
-
      // MONTE-CARLO; NB: Gir ulike svar pga rand()
      double MCint = 0; // initialize the sum
      double MCintsqr2 = 0.;
@@ -89,15 +87,22 @@ int main()
      srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
-     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
+     #pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      for ( int i = 0; i <= N; i++){
-         double x1 = double(rand())*invers_period;
+         double x1 = -double(rand())*invers_period;
          double x2 = double(rand())*invers_period;
          double y1 = double(rand())*invers_period;
          double y2 = double(rand())*invers_period;
          double z1 = double(rand())*invers_period;
          double z2 = double(rand())*invers_period;
-         double fx = int_function(x1,x2,y1,y2,z1,z2);
+         double fx = int_function(x1,y1,z1,x2,y2,z2);
+         /*
+         double y1 = M_PI*double(rand())*invers_period;
+         double y2 = M_PI*double(rand())*invers_period;
+         double z1 = 2*M_PI*double(rand())*invers_period;
+         double z2 = 2*M_PI*double(rand())*invers_period;
+         double fx = int_function_spherical(x1,x2,y1,y2,z1 ,z2);
+         */
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
