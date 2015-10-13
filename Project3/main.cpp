@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <random>
 
 #define EPS 3.0e-14
 #define MAXIT 10
@@ -30,9 +31,9 @@ int main()
 {
      clock_t start, finish; // declare start and final time for Armadillo solver
      start = clock();
-     int N = 10;
-     double a = -1.0;
-     double b = 1.0;
+     int N = 40;
+     double a = -3.0;
+     double b = 3.0;
 
 
      // GAUSS-LEGENDRE
@@ -56,7 +57,7 @@ int main()
              }
 
 
-
+    /*
      // GAUSS-LAGUERRE
      // Mesh points weights and function values
      double *xgl = new double [N+1];
@@ -74,38 +75,52 @@ int main()
                  for (int l = 0;l<N;l++){
                      for (int m = 0;m<N;m++){
                          for (int n = 0;n<N;n++){
-                             //int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                              int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
                   }}}}}
              }
 
-
+*/
 
      // MONTE-CARLO; NB: Gir ulike svar pga rand()
      double MCint = 0; // initialize the sum
      double MCintsqr2 = 0.;
-
-     double invers_period = 1./RAND_MAX; // initialise the random number generator
-     srand(time(NULL)); // This produces the so-called seed in MC jargon
+     //N = 100000;
+     //double invers_period = 1./RAND_MAX; // initialise the random number generator
+     //srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
+     default_random_engine generator;
+     uniform_real_distribution<double> distribution(0.0,1.0);
+
+     //int under = 0;
      for ( int i = 0; i <= N; i++){
-         double x1 = double(rand())*invers_period;
-         double x2 = double(rand())*invers_period;
-         double y1 = double(rand())*invers_period;
-         double y2 = double(rand())*invers_period;
-         double z1 = double(rand())*invers_period;
-         double z2 = double(rand())*invers_period;
+         double x1 = distribution(generator); // old way: double(rand())*invers_period;
+         double x2 = distribution(generator);
+         double y1 = distribution(generator);
+         double y2 = distribution(generator);
+         double z1 = distribution(generator);
+         double z2 = distribution(generator);
          double fx = int_function(x1,x2,y1,y2,z1,z2);
+
+         /*
+         double f_random = distribution(generator);
+
+         if( f_random <= fx )
+         {
+            under++;
+         }*/
+
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
+     //double ratio = ((double)under) / ((double) N);
+     //double area = 1.0;
+     //double integral = ratio*area;
 
      MCint = MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
-
 
 
      // FINAL OUTPUT
@@ -117,8 +132,8 @@ int main()
 
      cout << endl << "RESULTS:" << endl;
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
-     cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
+     //cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
+     //cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
@@ -128,8 +143,8 @@ int main()
      // Clear memory
      delete [] x;
      delete [] w;
-     delete [] xgl;
-     delete [] wgl;
+     //delete [] xgl;
+     //delete [] wgl;
 
      return 0;
 }
