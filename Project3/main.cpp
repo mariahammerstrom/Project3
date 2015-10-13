@@ -95,44 +95,28 @@ int main()
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      default_random_engine generator;
      uniform_real_distribution<double> distribution(0.0,1.0);
-/*
-     int under = 0;
-     for ( int i = 0; i <= N; i++){
-         double x1 = distribution(generator); // old way: double(rand())*invers_period;
-         double x2 = distribution(generator);
-         double y1 = distribution(generator);
-         double y2 = distribution(generator);
-         double z1 = distribution(generator);
-         double z2 = distribution(generator);
-         double fx = int_function(x1,x2,y1,y2,z1,z2);
-
-         double f_random = distribution(generator);
-
-         if( f_random <= fx )
-         {
-            under++;
-         }
-     //double ratio = ((double)under) / ((double) N);
-     //double area = 1.0;
-     //double integral = ratio*area;
-*/
+     exponential_distribution<double> expdistribution(0.2928552*0.19276571);
 
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      // Ny Monte Carlo
      double *y = new double [N];
+     double *z = new double [N];
      double fx;
-     //long idum = -1;
+     double fx_exp;
      double length = 3;
      double jacobidet = pow((2*length),6);
+
      // importance sampling
      for(int i=1;i<=N;i++)
      {
          for(int j=0;j<6;j++){
              y[j] = -length + 2*length*distribution(generator);
+             z[j] = expdistribution(generator);
          }
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
-         MCint += fx;
-         MCintsqr2 += fx*fx;
+         fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
+         MCint += fx_exp;
+         MCintsqr2 += fx_exp*fx_exp;
      }
      MCint = jacobidet*MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
@@ -162,6 +146,7 @@ int main()
      //delete [] xgl;
      //delete [] wgl;
      delete [] y;
+     delete [] z;
 
      return 0;
 }
