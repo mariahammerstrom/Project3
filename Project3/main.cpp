@@ -102,82 +102,35 @@ int main()
      }
 
 
-     /*
-     gauss_laguerre(xgl,wgl,N,alf);
-
-     // Evaluate the integral with the Gauss-Laguerre method
-     double int_gausslag = 0.; // initialize the sum
-     #pragma omp for reduction(+:int_gausslag) private(i,j,k,l,m,n)
-     for (int i=0;i<N;i++){
-         for (int j = 0;j<N;j++){
-             for (int k = 0;k<N;k++){
-                 for (int l = 0;l<N;l++){
-                     for (int m = 0;m<N;m++){
-                         for (int n = 0;n<N;n++){
-                             int_gausslag += wgl[i]*wgl[j]*wgl[k]*wgl[l]*wgl[m]*wgl[n]*int_function_spherical(xgl[i],xgl[j],xgl[k],xgl[l],xgl[m],xgl[n]);
-                  }}}}}
-             }
-
-     */
-
-
-
-     /*
-     // MONTE-CARLO
-     double MCint = 0; // initialize the sum
-     double MCintsqr2 = 0.;
-     N = 100000;
-     double invers_period = 1./RAND_MAX; // initialise the random number generator
-     srand(time(NULL)); // This produces the so-called seed in MC jargon
-
-     // Evaluate the integral with the a crude Monte-Carlo method
-
-     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
-
-
-     //int under = 0;
-     for ( int i = 0; i <= N; i++){
-         double x1 = distribution(generator); // old way: double(rand())*invers_period;
-         double x2 = distribution(generator);
-         double y1 = distribution(generator);
-         double y2 = distribution(generator);
-         double z1 = distribution(generator);
-         double z2 = distribution(generator);
-         double fx = int_function(x1,x2,y1,y2,z1,z2);
-     */
-
-     // Ny Monte Carlo
+     // MONTE CARLO
      N = 10000000;
      double *y = new double [N];
      double fx;
      double MCint = 0;
      double MCintsqr2 = 0;
-     //long idum = -1;
      double length = 3;
      double jacobidet = pow((2*length),6);
+     //double invers_period = 1./RAND_MAX; // initialise the random number generator
+     //srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      default_random_engine generator;
      uniform_real_distribution<double> distribution(0.0,1.0);
 
-     // importance sampling
      for(int i=1;i<=N;i++){
          for(int j=0;j<6;j++){
-             //y[j] = -length + 2*length*rand()/RAND_MAX;
-             y[j] = -length + 2*length*distribution(generator);
+             y[j] = -length + 2*length*distribution(generator);  //y[j] = -length + 2*length*rand()/RAND_MAX;
          }
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
      MCint = jacobidet*MCint/((double) N);
+     MCintsqr2 = MCintsqr2/((double) N);
+     double variance = MCintsqr2 - MCint*MCint;
 
      //double ratio = ((double)under) / ((double) N);
      //double area = 1.0;
      //double integral = ratio*area;
-
-     //MCint = MCint/((double) N);
-     MCintsqr2 = MCintsqr2/((double) N);
-     double variance = MCintsqr2 - MCint*MCint;
 
 
      // FINAL OUTPUT
