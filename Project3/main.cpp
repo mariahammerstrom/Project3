@@ -70,10 +70,10 @@ int main()
 
      // Solving r-components
      gauss_laguerre(xgl,wgl,N,alf);
-     double int_gausslag = 0.; // initialize the sum
+     double int_r = 0.; // initialize the sum
      for (int i=0;i<N;i++){
          for (int j = 0;j<N;j++){
-            int_gausslag += wgl[i]*wgl[j]*int_function_r(xgl[i],xgl[j]);
+            int_r += wgl[i]*wgl[j]*int_function_r(xgl[i],xgl[j]);
          }
      }
 
@@ -109,6 +109,7 @@ int main()
          }
      }
 
+     double int_spherical = int_r*int_phi*int_theta;
 
 
      /*
@@ -196,8 +197,8 @@ int main()
      cout << "b = " << b << " (upper limit)" << endl;
 
      cout << endl << "RESULTS:" << endl;
-     //cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     //cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
+     cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
+     cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_spherical << endl;
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
