@@ -4,6 +4,7 @@
 
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      // Ny Monte Carlo
+     N = 100000;
      double *y = new double [N];
      double *z = new double [N];
      double fx;
