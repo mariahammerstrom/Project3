@@ -61,30 +61,44 @@ int main()
      // GAUSS-LAGUERRE-LEGENDRE COMBO
      // r
      double alf = 2.0;
-     double *xgl = new double [N+1];
-     double *wgl = new double [N+1];
-     gauss_laguerre(xgl,wgl,N,alf);
+     double *xgl1 = new double [N+1];
+     double *wgl1 = new double [N+1];
+     gauss_laguerre(xgl1,wgl1,N,alf);
+
+     double *xgl2 = new double [N+1];
+     double *wgl2 = new double [N+1];
+     gauss_laguerre(xgl2,wgl2,N,alf);
 
      // PHI
-     double a_phi = 0;
-     double b_phi = 2*M_PI;
-     double *d = new double [N];
-     double *e = new double [N];
-     gauleg(a_phi,b_phi,d,e,N);
+     double a_phi1 = 0;
+     double b_phi1 = 2*M_PI;
+     double *d1 = new double [N];
+     double *e1 = new double [N];
+     gauleg(a_phi1,b_phi1,d1,e1,N);
+
+     double a_phi2 = 0;
+     double b_phi2 = 2*M_PI;
+     double *d2 = new double [N];
+     double *e2 = new double [N];
+     gauleg(a_phi2,b_phi2,d2,e2,N);
 
      // THETA
-     double a_costheta = -1;
-     double b_costheta = 1;
-     double *f = new double [N];
-     double *g = new double [N];
-     gauleg(a_costheta,b_costheta,f,g,N);
+     double a_costheta1 = -1;
+     double b_costheta1 = 1;
+     double *f1 = new double [N];
+     double *g1 = new double [N];
+     gauleg(a_costheta1,b_costheta1,f1,g1,N);
+
+     double a_costheta2 = -1;
+     double b_costheta2 = 1;
+     double *f2 = new double [N];
+     double *g2 = new double [N];
+     gauleg(a_costheta2,b_costheta2,f2,g2,N);
 
      // Solving the integral
      double int_spherical = 0;
      for (int i=0;i<N;i++){
-         for (int j = 0;j<N;j++){
-             int_spherical += wgl[i]*wgl[j]*e[i]*e[j]*g[i]*g[j]*int_function_spherical(xgl[i],xgl[j],f[i],f[j],d[i],d[j]);
-         }
+         int_spherical += wgl1[i]*wgl2[i]*e1[i]*e2[i]*g1[i]*g2[i]*int_function_spherical(xgl1[i],xgl2[i],f1[i],f2[i],d1[i],d2[i]);
      }
 
 
