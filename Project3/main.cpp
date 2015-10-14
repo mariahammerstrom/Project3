@@ -26,6 +26,9 @@ void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
 double gammln(double);
 
+double int_function_r(double r1,double r2);
+double int_function_theta(double theta1, double theta2);
+double int_function_phi(double phi1, double phi2);
 
 int main()
 {
@@ -58,12 +61,57 @@ int main()
 
 
 
-     // GAUSS-LAGUERRE
+     // GAUSS-LAGUERRE-LEGENDRE COMBO
      // Mesh points weights and function values
      double *xgl = new double [N+1];
      double *wgl = new double [N+1];
 
-     double alf = 1.0;
+     double alf = 2.0;
+
+     // Solving r-components
+     gauss_laguerre(xgl,wgl,N,alf);
+     double int_gausslag = 0.; // initialize the sum
+     for (int i=0;i<N;i++){
+         for (int j = 0;j<N;j++){
+            int_gausslag += wgl[i]*wgl[j]*int_function_r(xgl[i],xgl[j]);
+         }
+     }
+
+     // Solving angular components
+
+     // PHI
+     double a_phi = 0;
+     double b_phi = 2*M_PI;
+     double *d = new double [N];
+     double *e = new double [N];
+
+     gauleg(a_phi,b_phi,d,e,N);
+
+     double int_phi = 0.;
+     for (int i=0;i<N;i++){
+         for (int j = 0;j<N;j++){
+            int_phi += e[i]*e[j]*int_function_phi(d[i],d[j]);
+         }
+     }
+
+     // THETA
+     double a_costheta = -1.0;
+     double b_costheta = 1.0;
+     double *f = new double [N];
+     double *g = new double [N];
+
+     gauleg(a_costheta,b_costheta,f,g,N);
+
+     double int_theta = 0.;
+     for (int i=0;i<N;i++){
+         for (int j = 0;j<N;j++){
+            int_theta += g[i]*g[j]*int_function_theta(f[i],f[j]);
+         }
+     }
+
+
+
+     /*
      gauss_laguerre(xgl,wgl,N,alf);
 
      // Evaluate the integral with the Gauss-Laguerre method
@@ -79,29 +127,33 @@ int main()
                   }}}}}
              }
 
+     */
 
-     // MONTE-CARLO; NB: Gir ulike svar pga rand()
-     //double MCint = 0; // initialize the sum
-     //double MCintsqr2 = 0.;
-     //N = 100000;
-     //double invers_period = 1./RAND_MAX; // initialise the random number generator
-     //srand(time(NULL)); // This produces the so-called seed in MC jargon
+
+
+     /*
+     // MONTE-CARLO
+     double MCint = 0; // initialize the sum
+     double MCintsqr2 = 0.;
+     N = 100000;
+     double invers_period = 1./RAND_MAX; // initialise the random number generator
+     srand(time(NULL)); // This produces the so-called seed in MC jargon
 
      // Evaluate the integral with the a crude Monte-Carlo method
 
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
-     default_random_engine generator;
-     uniform_real_distribution<double> distribution(0.0,1.0);
+
 
      //int under = 0;
-     /*for ( int i = 0; i <= N; i++){
+     for ( int i = 0; i <= N; i++){
          double x1 = distribution(generator); // old way: double(rand())*invers_period;
          double x2 = distribution(generator);
          double y1 = distribution(generator);
          double y2 = distribution(generator);
          double z1 = distribution(generator);
          double z2 = distribution(generator);
-         double fx = int_function(x1,x2,y1,y2,z1,z2);*/
+         double fx = int_function(x1,x2,y1,y2,z1,z2);
+     */
 
      // Ny Monte Carlo
      N = 10000000;
@@ -112,6 +164,9 @@ int main()
      //long idum = -1;
      double length = 3;
      double jacobidet = pow((2*length),6);
+
+     default_random_engine generator;
+     uniform_real_distribution<double> distribution(0.0,1.0);
 
      // importance sampling
      for(int i=1;i<=N;i++){
@@ -179,6 +234,25 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
     else {return exp(exp1+exp2)/deno;}
     }
 
+double int_function_r(double r1,double r2){
+    double alpha = 2.0;
+    double exp1 = -2*alpha*sqrt(r1 + r2);
+    double numerator = r1*r1*r2*r2;
+    double deno = 1.; // HOW TO ACCOUNT FOR THIS??
+
+    if(deno < pow(10.,-6.)){return 0;}
+    else {return numerator*exp1/deno;}
+    }
+
+double int_function_theta(double theta1, double theta2){
+    // something
+    return 0;
+}
+
+double int_function_phi(double phi1, double phi2){
+    // something
+    return 0;
+}
 
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
     double alpha = 2.0;
@@ -291,8 +365,7 @@ void gauss_laguerre(double *x, double *w, int n, double alf)
 
 
 
-double gammln( double xx)
-{
+double gammln( double xx){
     double x,y,tmp,ser;
     static double cof[6]={76.18009172947146,-86.50532032941677,
         24.01409824083091,-1.231739572450155,
