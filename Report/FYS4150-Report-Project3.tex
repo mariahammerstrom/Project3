@@ -47,19 +47,19 @@ In this project we will determine the ground state correlation energy between tw
 
 We assume that the wave function of each electron can be modeled like the single-particle wave function of an electron in the hydrogen atom. The single-particle wave function  for an electron $i$ in the $1s$ state  is given in terms of a dimensionless variable    (the wave function is not properly normalized)
 
-\begin{equation}
+\begin{equation*}
 	{\bf r}_i =  x_i {\bf e}_x + y_i {\bf e}_y +z_i {\bf e}_z ,
-\end{equation}
+\end{equation*}
 as
 
-\begin{equation}
+\begin{equation*}
 	\psi_{1s}({\bf r}_i)  =   e^{-\alpha r_i},
-\end{equation}
+\end{equation*}
 where $\alpha$ is a parameter and 
 
-\begin{equation}
+\begin{equation*}
 	r_i = \sqrt{x_i^2+y_i^2+z_i^2}.
-\end{equation}
+\end{equation*}
 We will fix $\alpha=2$, which should correspond to the charge of the helium atom $Z=2$. 
 
 The ansatz for the wave function for two electrons is then given by the product of two 
@@ -68,16 +68,13 @@ so-called $1s$ wave functions as
 \begin{equation}
 	\Psi({\bf r}_1,{\bf r}_2)  =   e^{-\alpha (r_1+r_2)}.
 \end{equation}
-
 The integral we need to solve is the quantum mechanical expectation value of the correlation energy between two electrons which repel each other via the classical Coulomb interaction, namely
 
 \begin{equation}\label{eq:correlationenergy}
 	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} d{\bf r}_1d{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
 \end{equation}
-This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2$.
+This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2 \approx 0.192765710958777$.
 
-
-...
 
 
 \section{Methods}
@@ -110,16 +107,58 @@ Similarly, the \textbf{Laguerre polynomials} are solutions to the differential e
 \begin{equation}
 	L_n(x) = e^x \frac{d^n}{dx^n} (x^n e^{-x}) \textrm{ , } n = 0,1,2, \dots
 \end{equation}
+When using Gauss-Laguerre quadrature the integral runs from zero to $\infty$. The integral can be rewritten with spherical coordinates to better deal with the infinite limits. Then the integral in Eq. (\ref{eq:correlationenergy}) becomes:
+
+\begin{equation}
+	I = \int_0^{2\pi} \int_0^{2\pi}  \int_{-1}^1 \int_{-1}^1   \int_0^{\infty} \int_0^{\infty}    \frac{r_1^2 r_2^2}{r_{12}} dr_1  dr_2 dcos(\theta_1)dcos(\theta_2)d\phi_1d\phi_2
+\end{equation}
+with
+
+\begin{equation*}
+\frac{1}{r_{12}}= \frac{1}{\sqrt{r_1^2+r_2^2-2r_1r_2cos(\beta)}},
+\end{equation*}
+where
+
+\begin{equation*}
+cos(\beta) = cos(\theta_1)cos(\theta_2)+sin(\theta_1)sin(\theta_2)cos(\phi_1-\phi_2)).
+\end{equation*}
 
 
-\subsection{Monte-Carlo}
-The Monte-Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte-Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations.
 
+\subsection{Monte Carlo}
+The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations.
+
+We also want to run the Monte Carlo method by using importance sampling. In the regular Monte Carlo method we use uniformly distributed random numbers, but when considering importance sampling we will instead use exponentially distributed random numbers. We will also switch to spherical coordinates.
 ... 
 
 
 \section{Results}
+
+Using \textbf{Gauss-Legendre quadrature} means solving an integral from $- \infty$ to $+ \infty$. This can however not be achieved numerically. To find out how we can substitute the infinite limits with finite limits, we plot the single-particle wave function shown in Fig.~\ref{fig:integrand}, which shows that the function $e^{-\alpha r_i}$ reaches zero at approximately $r_i \approx 3$. We therefore used the limits [-3,3].
+
+\begin{center}
+	\includegraphics[width=90mm]{integrand.png} 	
+	\captionof{figure}{The single-particle wave function $e^{-\alpha r_i}$.}
+	\label{fig:integrand}
+\end{center}
+For $N = 25$ we found a value of 0.196 for the integral, very close to the exact value of 0.193. 
+
+Then we switched to \textbf{Gauss-Laguerre quadrature}.
+
 ...
+
+The \textbf{time} taken to run the program was recorded for the various methods:
+
+\begin{center}
+\begin{tabular}{ l l l}\hline
+	Method 								& N	 		& Time (s) \\ \hline
+	Gauss-Legendre 						& - 			& - \\
+	Gauss-Laguerre 						& -			& - \\
+	Monte Carlo 							& - 			& - \\
+	Monte Carlo (with importance sampling) 		& - 			& - \\
+	\hline
+\end{tabular}
+\end{center}
 
 
 
