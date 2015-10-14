@@ -115,7 +115,7 @@ int main()
      default_random_engine generator;
      uniform_real_distribution<double> distribution(0.0,1.0);
 
-     N = 100000;
+     N = 1000000;
      double *y = new double [N];
      double fx;
      double MCint = 0;
@@ -139,7 +139,7 @@ int main()
 
 
      // Importance sampling
-     double *q = new double [N];
+     //double *q = new double [N];
      double *z = new double [N];
      double fx_exp;
      double MCint_exp = 0;
@@ -152,17 +152,18 @@ int main()
 
      for(int i=1;i<=N;i++){
          for(int j=0;j<6;j++){
-             q[j] = -length + 2*length*expdistribution(expgenerator);
-             z[j] = expdistribution(expgenerator);
+             //q[j] = -length + 2*length*expdistribution(expgenerator);
+             z[j] = expdistribution(expgenerator); // Can be larger than 1
          }
-         fx = int_function(q[0],q[1],q[2],q[3],q[4],q[5]);
-         fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
+         //fx = int_function(q[0],q[1],q[2],q[3],q[4],q[5]);
+         fx_exp = int_function_spherical(z[0],z[1],z[2],z[3],2*M_PI*z[4],2*M_PI*z[5]);
          MCint_exp += fx_exp;
          MCintsqr2_exp += fx_exp*fx_exp;
      }
-     MCint_exp = jacobidet_exp*MCint_exp/((double) N);
+     MCint_exp = jacobidet_exp*MCint_exp/((double) N); // nan
      MCintsqr2_exp = MCintsqr2_exp/((double) N);
      double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
+     cout << z[5] << " " << z[3] << endl;
 
 
      // FINAL OUTPUT
@@ -191,7 +192,7 @@ int main()
      delete [] z;
      delete [] x;
      delete [] w;
-     delete [] q;
+     //delete [] q;
 
      return 0;
 }
