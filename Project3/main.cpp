@@ -80,7 +80,7 @@ int main()
              }
 
 
-     // MONTE-CARLO; NB: Gir ulike svar pga rand()
+     // MONTE-CARLO
      //double MCint = 0; // initialize the sum
      //double MCintsqr2 = 0.;
      //N = 100000;
@@ -92,6 +92,7 @@ int main()
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      default_random_engine generator;
      uniform_real_distribution<double> distribution(0.0,1.0);
+     exponential_distribution<double> expdistribution(0.2928552*0.19276571); // Correct for length 3
 
      //int under = 0;
      /*for ( int i = 0; i <= N; i++){
@@ -103,13 +104,14 @@ int main()
          double z2 = distribution(generator);
          double fx = int_function(x1,x2,y1,y2,z1,z2);*/
 
-     // Ny Monte Carlo
-     N = 10000000;
+     // New Monte Carlo
+     N = 100000;
      double *y = new double [N];
+     double *z = new double [N];
      double fx;
+     double fx_exp;
      double MCint = 0;
      double MCintsqr2 = 0;
-     //long idum = -1;
      double length = 3;
      double jacobidet = pow((2*length),6);
 
@@ -118,18 +120,14 @@ int main()
          for(int j=0;j<6;j++){
              //y[j] = -length + 2*length*rand()/RAND_MAX;
              y[j] = -length + 2*length*distribution(generator);
+             z[j] = expdistribution(generator);
          }
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
-         MCint += fx;
-         MCintsqr2 += fx*fx;
+         fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);;
+         MCint += fx_exp;
+         MCintsqr2 += fx_exp*fx_exp;
      }
      MCint = jacobidet*MCint/((double) N);
-
-     //double ratio = ((double)under) / ((double) N);
-     //double area = 1.0;
-     //double integral = ratio*area;
-
-     //MCint = MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
 
@@ -156,10 +154,9 @@ int main()
      //delete [] xgl;
      //delete [] wgl;
      delete [] y;
+     delete [] z;
      delete [] x;
      delete [] w;
-     //delete [] xgl;
-     //delete [] wgl;
 
      return 0;
 }
@@ -190,14 +187,6 @@ double int_function_spherical(double r1,double r2,double theta1,double theta2,do
     if(deno <pow(10.,-6.)){return 0;}
     else {return numerator*exp(expr)/deno;}
 }
-/*
-//Monte Carlo
-double int_mc(double x,double a)
-{
-
-}
-*/
-
 
 
 /* GAUSS-LEGENDRE
