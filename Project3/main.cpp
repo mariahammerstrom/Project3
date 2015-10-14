@@ -58,18 +58,47 @@ int main()
 
 
 
-     // GAUSS-LAGUERRE
-     // Mesh points weights and function values
-     double *xgl = new double [N+1];
-     double *wgl = new double [N+1];
+     // GAUSS-LAGUERRE-LEGENDRE COMBO
+     // r
+     double alf = 2.0;
+     double *xgl1 = new double [N+1];
+     double *wgl1 = new double [N+1];
+     gauss_laguerre(xgl1,wgl1,N,alf);
 
-     double alf = 1.0;
-     gauss_laguerre(xgl,wgl,N,alf);
+     double *xgl2 = new double [N+1];
+     double *wgl2 = new double [N+1];
+     gauss_laguerre(xgl2,wgl2,N,alf);
 
-     // Evaluate the integral with the Gauss-Laguerre method
-     double int_gausslag = 0.; // initialize the sum
-     #pragma omp for reduction(+:int_gausslag) private(i,j,k,l,m,n)
+     // PHI
+     double a_phi1 = 0;
+     double b_phi1 = 2*M_PI;
+     double *d1 = new double [N];
+     double *e1 = new double [N];
+     gauleg(a_phi1,b_phi1,d1,e1,N);
+
+     double a_phi2 = 0;
+     double b_phi2 = 2*M_PI;
+     double *d2 = new double [N];
+     double *e2 = new double [N];
+     gauleg(a_phi2,b_phi2,d2,e2,N);
+
+     // THETA
+     double a_costheta1 = -1;
+     double b_costheta1 = 1;
+     double *f1 = new double [N];
+     double *g1 = new double [N];
+     gauleg(a_costheta1,b_costheta1,f1,g1,N);
+
+     double a_costheta2 = -1;
+     double b_costheta2 = 1;
+     double *f2 = new double [N];
+     double *g2 = new double [N];
+     gauleg(a_costheta2,b_costheta2,f2,g2,N);
+
+     // Solving the integral
+     double int_spherical = 0;
      for (int i=0;i<N;i++){
+<<<<<<< HEAD
          for (int j = 0;j<N;j++){
              for (int k = 0;k<N;k++){
                  for (int l = 0;l<N;l++){
@@ -106,6 +135,15 @@ int main()
 
      // New Monte Carlo
      N = 100000;
+=======
+         int_spherical += wgl1[i]*wgl2[i]*e1[i]*e2[i]*g1[i]*g2[i]*int_function_spherical(xgl1[i],xgl2[i],f1[i],f2[i],d1[i],d2[i]);
+     }
+
+
+     // MONTE CARLO
+     // Brute force
+     N = 10000;
+>>>>>>> origin/master
      double *y = new double [N];
      double *z = new double [N];
      double fx;
@@ -114,13 +152,21 @@ int main()
      double MCintsqr2 = 0;
      double length = 3;
      double jacobidet = pow((2*length),6);
+     //double invers_period = 1./RAND_MAX; // initialise the random number generator
+     //srand(time(NULL)); // This produces the so-called seed in MC jargon
 
-     // importance sampling
+     default_random_engine generator;
+     uniform_real_distribution<double> distribution(0.0,1.0);
+
      for(int i=1;i<=N;i++){
          for(int j=0;j<6;j++){
+<<<<<<< HEAD
              //y[j] = -length + 2*length*rand()/RAND_MAX;
              y[j] = -length + 2*length*distribution(generator);
              z[j] = expdistribution(generator);
+=======
+             y[j] = -length + 2*length*distribution(generator);  //y[j] = -length + 2*length*rand()/RAND_MAX;
+>>>>>>> origin/master
          }
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
          fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);;
@@ -130,6 +176,39 @@ int main()
      MCint = jacobidet*MCint/((double) N);
      MCintsqr2 = MCintsqr2/((double) N);
      double variance = MCintsqr2 - MCint*MCint;
+<<<<<<< HEAD
+=======
+
+     //double ratio = ((double)under) / ((double) N);
+     //double area = 1.0;
+     //double integral = ratio*area;
+
+
+     // Importance sampling
+     double *q = new double [N];
+     double *z = new double [N];
+     double fx_exp;
+     double MCint_exp = 0;
+     double MCintsqr2_exp = 0;
+     double jacobidet_exp = pow((2*length),6);
+
+     default_random_engine expgenerator;
+     exponential_distribution<double> expdistribution(exp(-2*alf));
+
+     for(int i=1;i<=N;i++){
+         for(int j=0;j<6;j++){
+             y[j] = -length + 2*length*expdistribution(expgenerator);
+             z[j] = expdistribution(expgenerator);
+         }
+         fx = int_function(q[0],q[1],q[2],q[3],q[4],q[5]);
+         fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
+         MCint_exp += fx_exp;
+         MCintsqr2_exp += fx_exp*fx_exp;
+     }
+     MCint_exp = jacobidet_exp*MCint_exp/((double) N);
+     MCintsqr2_exp = MCintsqr2_exp/((double) N);
+     double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
+>>>>>>> origin/master
 
 
      // FINAL OUTPUT
@@ -139,9 +218,10 @@ int main()
      cout << "b = " << b << " (upper limit)" << endl;
 
      cout << endl << "RESULTS:" << endl;
-     //cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
-     //cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_gausslag << endl;
+     cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
+     cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_spherical << endl;
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
+     cout << "Monte Carlo (imp.) " << "\t" << setprecision(15) << MCint_exp << " (variance = " << variance_exp << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
@@ -176,11 +256,14 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
     else {return exp(exp1+exp2)/deno;}
     }
 
-
-double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
+double int_function_spherical(double r1,double r2,double costheta1,double costheta2,double phi1,double phi2){
     double alpha = 2.0;
+    double theta1 = acos(costheta1);
+    double theta2 = acos(costheta2);
+
     double numerator = r1*r1*r2*r2;
-    double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    //double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    double cos_beta = costheta1*costheta2 + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double expr = -2*alpha*(r1+r2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
 
@@ -280,8 +363,7 @@ void gauss_laguerre(double *x, double *w, int n, double alf)
 
 
 
-double gammln( double xx)
-{
+double gammln( double xx){
     double x,y,tmp,ser;
     static double cof[6]={76.18009172947146,-86.50532032941677,
         24.01409824083091,-1.231739572450155,
