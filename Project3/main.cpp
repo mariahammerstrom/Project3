@@ -103,6 +103,7 @@ int main()
 
 
      // MONTE CARLO
+     // Brute force
      N = 10000000;
      double *y = new double [N];
      double fx;
@@ -133,6 +134,29 @@ int main()
      //double integral = ratio*area;
 
 
+     // Importance sampling
+     double *q = new double [N];
+     double fx_i;
+     double MCint_i = 0;
+     double MCintsqr2_i = 0;
+     double jacobidet_i = pow((2*length),6);
+
+     default_random_engine generator_i;
+     exponential_distribution<double> distribution_i(3.5);
+
+     for(int i=1;i<=N;i++){
+         for(int j=0;j<6;j++){
+             q[j] = -length + 2*length*distribution_i(generator_i);
+         }
+         fx_i = int_function_spherical(q[0],q[1],q[2],q[3],q[4],q[5]);
+         MCint_i += fx_i;
+         MCintsqr2_i += fx_i*fx_i;
+     }
+     MCint_i = jacobidet_i*MCint_i/((double) N);
+     MCintsqr2_i = MCintsqr2_i/((double) N);
+     double variance_i = MCintsqr2_i - MCint*MCint_i;
+
+
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
      cout << "N = " << N << endl;
@@ -143,6 +167,7 @@ int main()
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
      cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_spherical << endl;
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
+     cout << "Monte Carlo (imp.) " << "\t" << setprecision(15) << MCint_i << " (variance = " << variance_i << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
