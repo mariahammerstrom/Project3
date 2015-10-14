@@ -26,9 +26,6 @@ void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
 double gammln(double);
 
-double int_function_r(double r1,double r2);
-double int_function_theta(double theta1, double theta2);
-double int_function_phi(double phi1, double phi2);
 
 int main()
 {
@@ -62,54 +59,33 @@ int main()
 
 
      // GAUSS-LAGUERRE-LEGENDRE COMBO
-     // Mesh points weights and function values
+     // r
+     double alf = 2.0;
      double *xgl = new double [N+1];
      double *wgl = new double [N+1];
-
-     double alf = 2.0;
-
-     // Solving r-components
      gauss_laguerre(xgl,wgl,N,alf);
-     double int_r = 0.; // initialize the sum
-     for (int i=0;i<N;i++){
-         for (int j = 0;j<N;j++){
-            int_r += wgl[i]*wgl[j]*int_function_r(xgl[i],xgl[j]);
-         }
-     }
-
-     // Solving angular components
 
      // PHI
      double a_phi = 0;
      double b_phi = 2*M_PI;
      double *d = new double [N];
      double *e = new double [N];
-
      gauleg(a_phi,b_phi,d,e,N);
 
-     double int_phi = 0.;
-     for (int i=0;i<N;i++){
-         for (int j = 0;j<N;j++){
-            int_phi += e[i]*e[j]*int_function_phi(d[i],d[j]);
-         }
-     }
-
      // THETA
-     double a_costheta = -1.0;
-     double b_costheta = 1.0;
+     double a_costheta = -1;
+     double b_costheta = 1;
      double *f = new double [N];
      double *g = new double [N];
-
      gauleg(a_costheta,b_costheta,f,g,N);
 
-     double int_theta = 0.;
+     // Solving the integral
+     double int_spherical = 0;
      for (int i=0;i<N;i++){
          for (int j = 0;j<N;j++){
-            int_theta += g[i]*g[j]*int_function_theta(f[i],f[j]);
+             int_spherical += wgl[i]*wgl[j]*e[i]*e[j]*g[i]*g[j]*int_function_spherical(xgl[i],xgl[j],f[i],f[j],d[i],d[j]);
          }
      }
-
-     double int_spherical = int_r*int_phi*int_theta;
 
 
      /*
@@ -235,30 +211,14 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
     else {return exp(exp1+exp2)/deno;}
     }
 
-double int_function_r(double r1,double r2){
+double int_function_spherical(double r1,double r2,double costheta1,double costheta2,double phi1,double phi2){
     double alpha = 2.0;
-    double exp1 = -2*alpha*sqrt(r1 + r2);
+    double theta1 = acos(costheta1);
+    double theta2 = acos(costheta2);
+
     double numerator = r1*r1*r2*r2;
-    double deno = 1.; // HOW TO ACCOUNT FOR THIS??
-
-    if(deno < pow(10.,-6.)){return 0;}
-    else {return numerator*exp1/deno;}
-    }
-
-double int_function_theta(double theta1, double theta2){
-    // something
-    return 0;
-}
-
-double int_function_phi(double phi1, double phi2){
-    // something
-    return 0;
-}
-
-double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
-    double alpha = 2.0;
-    double numerator = r1*r1*r2*r2;
-    double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    //double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    double cos_beta = costheta1*costheta2 + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double expr = -2*alpha*(r1+r2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
 
