@@ -104,7 +104,7 @@ int main()
 
      // MONTE CARLO
      // Brute force
-     N = 10000000;
+     N = 10000;
      double *y = new double [N];
      double fx;
      double MCint = 0;
@@ -136,25 +136,28 @@ int main()
 
      // Importance sampling
      double *q = new double [N];
-     double fx_i;
-     double MCint_i = 0;
-     double MCintsqr2_i = 0;
-     double jacobidet_i = pow((2*length),6);
+     double *z = new double [N];
+     double fx_exp;
+     double MCint_exp = 0;
+     double MCintsqr2_exp = 0;
+     double jacobidet_exp = pow((2*length),6);
 
-     default_random_engine generator_i;
-     exponential_distribution<double> distribution_i(3.5);
+     default_random_engine expgenerator;
+     exponential_distribution<double> expdistribution(exp(-2*alf));
 
      for(int i=1;i<=N;i++){
          for(int j=0;j<6;j++){
-             q[j] = -length + 2*length*distribution_i(generator_i);
+             y[j] = -length + 2*length*expdistribution(expgenerator);
+             z[j] = expdistribution(expgenerator);
          }
-         fx_i = int_function_spherical(q[0],q[1],q[2],q[3],q[4],q[5]);
-         MCint_i += fx_i;
-         MCintsqr2_i += fx_i*fx_i;
+         fx = int_function(q[0],q[1],q[2],q[3],q[4],q[5]);
+         fx_exp = int_function_spherical(z[0],z[1],M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
+         MCint_exp += fx_exp;
+         MCintsqr2_exp += fx_exp*fx_exp;
      }
-     MCint_i = jacobidet_i*MCint_i/((double) N);
-     MCintsqr2_i = MCintsqr2_i/((double) N);
-     double variance_i = MCintsqr2_i - MCint*MCint_i;
+     MCint_exp = jacobidet_exp*MCint_exp/((double) N);
+     MCintsqr2_exp = MCintsqr2_exp/((double) N);
+     double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
 
 
      // FINAL OUTPUT
@@ -167,7 +170,7 @@ int main()
      cout << "Gauss-Legendre "<< "\t" << setprecision(15)  << int_gauss << endl;
      cout << "Gauss-Laguerre " << "\t" << setprecision(15) << int_spherical << endl;
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
-     cout << "Monte Carlo (imp.) " << "\t" << setprecision(15) << MCint_i << " (variance = " << variance_i << ")"<< endl;
+     cout << "Monte Carlo (imp.) " << "\t" << setprecision(15) << MCint_exp << " (variance = " << variance_exp << ")"<< endl;
 
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
 
