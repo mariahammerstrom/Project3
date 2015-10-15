@@ -21,22 +21,22 @@ using namespace std;
 
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2);
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
-//double int_mc(double,double);
+double int_function_spherical_MC(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
 void gauss_laguerre(double *, double *, int, double);
 void gauleg(double, double, double *, double *, int);
-double gammln(double);
+double gammln(double xx);
 
 
 int main()
 {
-     clock_t start, finish; // declare start and final time for Armadillo solver
-     start = clock();
-
-     int N = 10;
-     double a = -1.0;
-     double b = 1.0;
+     int N = 25; // 25
+     double a = -3.0;
+     double b = 3.0;
 
      // GAUSS-LEGENDRE
+     clock_t start_gauleg, finish_gauleg; // declare start and final time
+     start_gauleg = clock();
+
      // Mesh points weights and function values
      double *x = new double [N];
      double *w = new double [N];
@@ -45,7 +45,7 @@ int main()
 
      // Evaluate the integral with the Gauss-Legendre method
      double int_gauss = 0.; // initialize the sum
-     #pragma omp for reduction(+:int_gauss) private(i,j,k,l,m,n)
+     //#pragma omp for reduction(+:int_gauss) private(i,j,k,l,m,n)
      for (int i=0;i<N;i++){
          for (int j = 0;j<N;j++){
              for (int k = 0;k<N;k++){
@@ -55,19 +55,19 @@ int main()
                              int_gauss += w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
                   }}}}}
              }
-
+     finish_gauleg = clock(); // final time
 
 
      // GAUSS-LAGUERRE-LEGENDRE COMBO
+     clock_t start_gaulag, finish_gaulag; // declare start and final time
+     start_gaulag = clock();
+
      // r
      double alf = 2.0;
-     double *xgl1 = new double [N+1];
-     double *wgl1 = new double [N+1];
+     double *xgl1 = new double [N];
+     double *wgl1 = new double [N];
      gauss_laguerre(xgl1,wgl1,N,alf);
 
-     double *xgl2 = new double [N+1];
-     double *wgl2 = new double [N+1];
-     gauss_laguerre(xgl2,wgl2,N,alf);
 
      // PHI
      double a_phi1 = 0;
@@ -76,56 +76,49 @@ int main()
      double *e1 = new double [N];
      gauleg(a_phi1,b_phi1,d1,e1,N);
 
-     double a_phi2 = 0;
-     double b_phi2 = 2*M_PI;
-     double *d2 = new double [N];
-     double *e2 = new double [N];
-     gauleg(a_phi2,b_phi2,d2,e2,N);
 
      // THETA
-     double a_costheta1 = -1;
-     double b_costheta1 = 1;
+     double a_theta1 = 0;
+     double b_theta1 = M_PI;
      double *f1 = new double [N];
      double *g1 = new double [N];
-     gauleg(a_costheta1,b_costheta1,f1,g1,N);
+     gauleg(a_theta1,b_theta1,f1,g1,N);
 
-     double a_costheta2 = -1;
-     double b_costheta2 = 1;
-     double *f2 = new double [N];
-     double *g2 = new double [N];
-     gauleg(a_costheta2,b_costheta2,f2,g2,N);
 
      // Solving the integral
-     double int_spherical = 0;
+     double int_spherical = 0.0;
      for (int i=0;i<N;i++){
          for (int j = 0;j<N;j++){
              for (int k = 0;k<N;k++){
                  for (int l = 0;l<N;l++){
                      for (int m = 0;m<N;m++){
                          for (int n = 0;n<N;n++){
-                             int_spherical += wgl1[i]*wgl2[i]*e1[i]*e2[i]*g1[i]*g2[i]*int_function_spherical(xgl1[i],xgl2[i],f1[i],f2[i],d1[i],d2[i]);
+                             int_spherical += wgl1[i]*wgl1[j]*e1[k]*e1[l]*g1[m]*g1[n]*int_function_spherical(xgl1[i],xgl1[j],f1[k],f1[l],d1[m],d1[n]);
                          }}}}}
              }
+
+     int_spherical = int_spherical/1024.0;
+     finish_gaulag = clock(); // final time
 
 
      // MONTE-CARLO
      // Evaluate the integral with the a crude Monte-Carlo method
+     clock_t start_MC, finish_MC; // declare start and final time
+     start_MC = clock();
 
      //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
      default_random_engine generator;
      uniform_real_distribution<double> distribution(0.0,1.0);
 
-     N = 1000000;
-     double *y = new double [N];
+     int N_MC = 50000000;
+     double *y = new double [N_MC];
      double fx;
      double MCint = 0;
      double MCintsqr2 = 0;
      double length = 3;
      double jacobidet = pow((2*length),6);
-     //double invers_period = 1./RAND_MAX; // initialise the random number generator
-     //srand(time(NULL)); // This produces the so-called seed in MC jargon
 
-     for(int i=1;i<=N;i++){
+     for(int i=1;i<=N_MC;i++){
          for(int j=0;j<6;j++){
              y[j] = -length + 2*length*distribution(generator);
          }
@@ -133,42 +126,45 @@ int main()
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
-     MCint = jacobidet*MCint/((double) N);
-     MCintsqr2 = MCintsqr2/((double) N);
+     MCint = jacobidet*MCint/((double) N_MC);
+     MCintsqr2 = MCintsqr2/((double) N_MC);
      double variance = MCintsqr2 - MCint*MCint;
+
+     finish_MC = clock(); // final time
 
 
      // Importance sampling
-     //double *q = new double [N];
-     double *z = new double [N];
+     clock_t start_MCi, finish_MCi; // declare start and final time
+     start_MCi = clock();
+
+     int N_MCi = 100000;
+
+     double *z = new double [N_MCi];
      double fx_exp;
      double MCint_exp = 0;
      double MCintsqr2_exp = 0;
-     double jacobidet_exp = pow((2*length),6);
+     double jacobidet_exp = 4*pow(acos(-1.),4.0)*1./16;
 
-     default_random_engine expgenerator;
-     exponential_distribution<double> expdistribution(exp(-2*alf));
-     //exponential_distribution<double> expdistribution(0.2928552*0.19276571);
-
-     for(int i=1;i<=N;i++){
+     for(int i=1;i<=N_MCi;i++){
          for(int j=0;j<6;j++){
-             //q[j] = -length + 2*length*expdistribution(expgenerator);
-             z[j] = expdistribution(expgenerator); // Can be larger than 1
+             z[j] = distribution(generator);
          }
-         //fx = int_function(q[0],q[1],q[2],q[3],q[4],q[5]);
-         fx_exp = int_function_spherical(z[0],z[1],z[2],z[3],2*M_PI*z[4],2*M_PI*z[5]);
+         fx_exp = int_function_spherical_MC(-0.25*log(1-z[0]),-0.25*log(1-z[1]),M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
          MCint_exp += fx_exp;
          MCintsqr2_exp += fx_exp*fx_exp;
      }
-     MCint_exp = jacobidet_exp*MCint_exp/((double) N); // nan
-     MCintsqr2_exp = MCintsqr2_exp/((double) N);
+     MCint_exp = jacobidet_exp*MCint_exp/((double) N_MCi);
+     MCintsqr2_exp = MCintsqr2_exp/((double) N_MCi);
      double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
-     cout << z[5] << " " << z[3] << endl;
+
+     finish_MCi = clock(); // final time
 
 
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
      cout << "N = " << N << endl;
+     cout << "N_MC = " << N_MC << endl;
+     cout << "N_MCi = " << N_MCi << endl;
      cout << "a = " << a << " (lower limit)" << endl;
      cout << "b = " << b << " (upper limit)" << endl;
 
@@ -178,18 +174,22 @@ int main()
      cout << "Monte Carlo " << "\t" << setprecision(15) << MCint << " (variance = " << variance << ")"<< endl;
      cout << "Monte Carlo (imp.) " << "\t" << setprecision(15) << MCint_exp << " (variance = " << variance_exp << ")"<< endl;
 
-     cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl;
+     cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl << endl;
 
-     finish = clock(); // final time
-     cout << endl << "Total time: " << "\t" << ((finish - start)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "TIME USAGE:" << endl;
+     cout << "Gauss-Legendre " << "\t" << ((finish_gauleg - start_gauleg)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Gauss-Laguerre " << "\t" << ((finish_gaulag - start_gaulag)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Monte Carlo " << "\t" << ((finish_MC - start_MC)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Monte Carlo (imp.) " << "\t" << ((finish_MCi - start_MCi)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+
 
      // Clear memory
      //delete [] x;
      //delete [] w;
      //delete [] xgl;
      //delete [] wgl;
-     delete [] y;
-     delete [] z;
+     //delete [] y;
+     //delete [] z;
      delete [] x;
      delete [] w;
      //delete [] q;
@@ -208,23 +208,30 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
     double exp2 = -2*alpha*sqrt(x2*x2 + y2*y2 + z2*z2);
     double deno = sqrt(pow((x1-x2),2) + pow((y1-y2),2) + pow((z1-z2),2));
 
-    if(deno < pow(10.,-6.)){return 0;}
-    else {return exp(exp1+exp2)/deno;}
+    if(deno < pow(10.,-6.)){
+        return 0;}
+    else
+        return exp(exp1+exp2)/deno;
     }
 
-double int_function_spherical(double r1,double r2,double costheta1,double costheta2,double phi1,double phi2){
-    double alpha = 2.0;
-    double theta1 = acos(costheta1);
-    double theta2 = acos(costheta2);
-
-    double numerator = r1*r1*r2*r2;
-    //double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
-    double cos_beta = costheta1*costheta2 + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
-    double expr = -2*alpha*(r1+r2);
+double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
+    double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
 
-    if(deno <pow(10.,-6.)){return 0;}
-    else {return numerator*exp(expr)/deno;}
+    if(deno < pow(10.,-6.) || isnan(deno)){
+        return 0;}
+    else
+        return sin(theta1)*sin(theta2)/deno;
+}
+
+double int_function_spherical_MC(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
+    double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
+    double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
+
+    if(deno < pow(10.,-6.) || isnan(deno)){
+        return 0;}
+    else
+        return r1*r1*r2*r2*sin(theta1)*sin(theta2)/deno;
 }
 
 
@@ -312,8 +319,8 @@ void gauss_laguerre(double *x, double *w, int n, double alf)
             if (fabs(z-z1) <= EPS) break;
         }
         if (its > MAXIT) cout << "too many iterations in gaulag" << endl;
-        x[i]=z;
-        w[i] = -exp(gammln(alf+n)-gammln((double)n))/(pp*n*p2);
+        x[i-1]=z;
+        w[i-1] = -exp(gammln(alf+n)-gammln((double)n))/(pp*n*p2);
     }
 }
 

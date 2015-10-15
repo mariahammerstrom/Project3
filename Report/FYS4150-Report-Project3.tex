@@ -102,6 +102,15 @@ The \textbf{Legendre polynomials} are solutions to a differential equation arisi
 \begin{equation}
 	L_k(x) = \frac{1}{2^k k!} \frac{d^k}{dx^k} (x^2 - 1)^k \textrm{ , } k = 0,1,2, \dots
 \end{equation}
+Using \textbf{Gauss-Legendre quadrature} means solving an integral from $- \infty$ to $+ \infty$. This can however not be achieved numerically. To find out how we can substitute the infinite limits with finite limits, we plot the single-particle wave function shown in Fig.~\ref{fig:integrand}, which shows that the function $e^{-\alpha r_i}$ reaches zero at approximately $r_i \approx 3$. We therefore used the limits [-3,3].
+
+\begin{center}
+	\includegraphics[width=90mm]{integrand.png} 	
+	\captionof{figure}{The single-particle wave function $e^{-\alpha r_i}$.}
+	\label{fig:integrand}
+\end{center}
+
+
 Similarly, the \textbf{Laguerre polynomials} are solutions to the differential equation arising in for example the solution of the \textit{radial} Schr\"{o}dinger's equation as described above. The Laguerre polynomials are defined as
 
 \begin{equation}
@@ -133,32 +142,21 @@ We also want to run the Monte Carlo method by using importance sampling. In the 
 
 
 \section{Results}
-
-Using \textbf{Gauss-Legendre quadrature} means solving an integral from $- \infty$ to $+ \infty$. This can however not be achieved numerically. To find out how we can substitute the infinite limits with finite limits, we plot the single-particle wave function shown in Fig.~\ref{fig:integrand}, which shows that the function $e^{-\alpha r_i}$ reaches zero at approximately $r_i \approx 3$. We therefore used the limits [-3,3].
-
-\begin{center}
-	\includegraphics[width=90mm]{integrand.png} 	
-	\captionof{figure}{The single-particle wave function $e^{-\alpha r_i}$.}
-	\label{fig:integrand}
-\end{center}
-For $N = 25$ we found a value of 0.196 for the integral, very close to the exact value of 0.193. 
-
-Then we switched to \textbf{Gauss-Laguerre quadrature}.
-
-...
-
 The \textbf{time} taken to run the program was recorded for the various methods:
 
 \begin{center}
-\begin{tabular}{ l l l}\hline
-	Method 								& N	 		& Time (s) \\ \hline
-	Gauss-Legendre 						& - 			& - \\
-	Gauss-Laguerre 						& -			& - \\
-	Monte Carlo 							& - 			& - \\
-	Monte Carlo (with importance sampling) 		& - 			& - \\
+\begin{tabular}{ l l l l l}\hline
+	Method 				& N	 		&I			&$\sigma$		& $t$ (s) \\ \hline
+	Gauss-Legendre 		& 25 			& 0.1958		& -				& 6 \\
+	Gauss-Laguerre 		& -			& -			& -				& - \\
+	Monte Carlo 			& 500E5 		& 0.1972		& -3.88679E-2		& 6 \\
+	Monte Carlo * 			& 1E5		& 0.1959		& -3.61967E-2		& 0 \\
 	\hline
 \end{tabular}
 \end{center}
+where * denotes importance sampling.
+
+COMMENTS.
 
 
 
