@@ -48,7 +48,7 @@
 \section{Introduction}
 In this project we will determine the ground state correlation energy between two electrons in an helium atom by calculating a six-dimensional integral that appears in many quantum mechanical applications. The methods we will use are Gauss-Legendre and Gauss-Laguerre quadrature and Monte-Carlo integration. 
 
-We assume that the wave function of each electron can be modeled like the single-particle wave function of an electron in the hydrogen atom. The single-particle wave function  for an electron $i$ in the $1s$ state  is given in terms of a dimensionless variable    (the wave function is not properly normalized)
+We assume that the wave function of each electron can be modelled like the single-particle wave function of an electron in the hydrogen atom. The single-particle wave function  for an electron $i$ in the $1s$ state  is given in terms of a dimensionless variable (the wave function is not properly normalized)
 
 \begin{equation*}
 	{\bf r}_i =  x_i {\bf e}_x + y_i {\bf e}_y +z_i {\bf e}_z ,
@@ -76,6 +76,13 @@ The integral we need to solve is the quantum mechanical expectation value of the
 \begin{equation}\label{eq:correlationenergy}
 	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} \mathrm{d}{\bf r}_1\mathrm{d}{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
 \end{equation}
+In Cartesian coordinates, this integral can be rewritten as
+\begin{equation}\label{eq:cartesian}
+	\int\mathrm{d}\textbf{x}_1\mathrm{d}\textbf{x}_2\frac{\exp\left(-2\alpha\left[\sqrt{x_1^2+y_1^2+z_1^2}+ \sqrt{x_2^2+y_2^2+z_2^2}\right]\right)}{\left[(x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2\right]^{1/2}},
+\end{equation}
+where $\mathrm{d}\textbf{x}_i=\mathrm{d}x_i\mathrm{d}y_i\mathrm{d}z_i$.
+
+
 This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2 \approx 0.192765710958777$.
 
 
@@ -128,14 +135,14 @@ The function \verb@gauleg@ to calculate the weights and mesh points using Legend
 \subsubsection{Gauss-Laguerre quadrature}
 In using Legendre polynomials our originally infinite limits had to be approximated by finite ones. Our integral in Eq. (\ref{eq:correlationenergy}) can be rewritten with spherical coordinates to better deal with the infinite limits. Then the integral in becomes
 
-\begin{equation}
+\begin{equation}\label{eg:gaulag}
 	I = \int    r_1^2 r_2^2 \frac{e^{- 2 \alpha (r_1 + r_2)}}{r_{12}} \sin \theta_1 \sin \theta_2 \mathrm{d}r_1  \mathrm{d}r_2 \mathrm{d}\theta_1 \mathrm{d}\theta_2 \mathrm{d}\phi_1\mathrm{d}\phi_2,
 \end{equation}
 where $r_i \in [0,\infty]$, $\theta_i \in [0,\pi]$ and $\phi_i \in [0, 2\pi]$, with
 
-\begin{equation}\label{eq:r12}
+\begin{equation*}
 	\frac{1}{r_{12}}= \frac{1}{\sqrt{r_1^2+r_2^2-2r_1r_2\cos(\beta)}},
-\end{equation}
+\end{equation*}
 where
 
 \begin{equation*}
@@ -169,20 +176,17 @@ The function \verb@gauss_laguerre@ to calculate the weights and mesh points of t
 
 
 \subsection{Monte Carlo}
-The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations, and multiplied with the Jacobi determinant of the change of variables.
+The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations, and multiplied with the Jacobi determinant of the change of variables. With the limits $a$ and $b$, we change variables 
 \begin{equation}
-	r_{i,j} = -l + 2lx_{i,j};\,i=1,2;\,j=1,2,3.
+	r_{i,j} = a - (b-a)x_{i,j};\,i=1,2;\,j=1,2,3,
 \end{equation}
-$x_{i,j}$ is a uniformly distributed random number between 0 and 1. Thus $r_{i,j}$ goes from $-l$ to $l$. The Jacobi determinant for this is $(2l)^6$, as we have 6 variables. We solve the integral as it appears with $x_1,\,x_2,\,y_1,\,y_2,\,z_1,\,z_2$.
+where $x_{i,j}$ is a uniformly distributed random number between 0 and 1.
+The Jacobi determinant for this is $(b-a)^6$, as we have 6 variables.
+We solve the integral as it appears in eq.~(\ref{eq:cartesian}) with $x_{i,1} = x_i$, $x_{i,2} = y_i$, $x_{i,3} = z_i$, and $\alpha=2$. With this method we go from 6 nested \verb@for-loops@ to only one.
 
-To get better precision we also run the Monte Carlo method by using importance sampling. For this case we return to spherical coordinates,
+To get better precision we also run the Monte Carlo method by using importance sampling. For this case we return to spherical coordinates as it is written in eq.~(\ref{eg:gaulag}). The PDF of $r_i$ is then given by
 \begin{equation}
-	I = \int\limits_0^{\infty}\mathrm{d}r_1\mathrm{d}r_2\int\limits_0^{\pi}\mathrm{d}\theta_1\mathrm{d}\theta_2\int\limits_0^{2\pi}\mathrm{d}\phi_1\mathrm{d}\phi_2
-	\frac{r_1^2r_2^2\sin\theta_1\sin\theta_2}{r_{12}},
-\end{equation}
-where $r_{12}$ is given in eq.~(\ref{eq:r12}). The PDF of $r_i$ is given by
-\begin{equation}
-	p(r_i)=4\mathrm{e}^{-4r_i},
+	P(r_i)=4\mathrm{e}^{-4r_i},
 \end{equation}
 so we want to use exponentially distributed random numbers. This is done by changing variables as follows
 \begin{align*}
@@ -194,10 +198,11 @@ where $x_i$ is a random number between 0 and 1.
 The Jacobi determinant is then given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
 
 
-Lastly, we calculate the variance, which is given by 
+Lastly, we calculate the variance, 
 \begin{equation}\label{eq:variance}
-	\sigma^2 = \int\limits_{-\infty}^{\infty}\mathrm{d}xP(x)(x-\mu)^2 = \langle x^2\rangle-\langle x\rangle^2.
+	\sigma^2 = \int\limits_{-\infty}^{\infty}\mathrm{d}xP(x)(x-\mu)^2 = \langle x^2\rangle-\langle x\rangle^2,
 \end{equation}
+which gives a measure of how far our set of points are separated.
 
 
 \section{Results}
