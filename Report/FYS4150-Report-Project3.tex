@@ -159,9 +159,9 @@ Locating the part of the integral that represents the weight function $W(x)$ we 
 \end{equation*}
 Thus 
 
-\begin{equation}
+\begin{equation*}
 	g(u_1, u_2, \theta_1, \theta_2, \phi_1, \phi_2) = \frac{\sin \theta_1 \sin \theta_2}{r_{12}}.
-\end{equation}
+\end{equation*}
 The function \verb@gauss_laguerre@ to calculate the weights and mesh points of the radial parts of the integral has been provided. Again all we have to do is to call \verb@gauss_laguerre@ for the radial part, and \verb@gauleg@ for the angular parts, and go through a 6-dimensional nested \verb@for@-loop to calculate the sum which approximates the integral. 
 
 
@@ -179,8 +179,10 @@ We also want to run the Monte Carlo method by using importance sampling, as this
 For this case we return to spherical coordinates,
 \begin{equation}
 	I = \int\limits_0^{\infty}\mathrm{d}r_1\mathrm{d}r_2\int\limits_0^{\pi}\mathrm{d}\theta_1\mathrm{d}\theta_2\int\limits_0^{2\pi}\mathrm{d}\phi_1\mathrm{d}\phi_2
-	\frac{r_1^2r_2^2\sin(\theta_1)\sin(\theta_2)}{r_{12}}
-\end{equation}, where $r_{12}$ is given in eq.~(\ref{eq:r12}).
+	\frac{r_1^2r_2^2\sin(\theta_1)\sin(\theta_2)}{r_{12}},
+\end{equation}
+where $r_{12}$ is given in eq.~(\ref{eq:r12}).
+
 For $r_i$ we want to use exponentially distributed random numbers.
 %In the regular Monte Carlo method we use uniformly distributed random numbers, but when considering importance sampling we will instead use exponentially distributed random numbers.
 %We will also switch to spherical coordinates.
@@ -191,7 +193,7 @@ This is done by changing variables as follows
 	\phi_i &\rightarrow 2\pi x_i,
 \end{align*}
 where $x_i$ is a random number between 0 and 1.
-The Jocobi determinant is in this case given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
+The Jacobi determinant is in this case given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
 
 
 Lastly, we calculate the variance, which is given by 
