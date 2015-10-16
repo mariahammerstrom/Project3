@@ -42,7 +42,7 @@
 
 
 
-%\begin{multicols}{1}
+%\begin{multicols}{2}
 
 \section{Introduction}
 In this project we will determine the ground state correlation energy between two electrons in an helium atom by calculating a six-dimensional integral that appears in many quantum mechanical applications. The methods we will use are Gauss-Legendre and Gauss-Laguerre quadrature and Monte-Carlo integration. 
@@ -73,7 +73,7 @@ so-called $1s$ wave functions as
 The integral we need to solve is the quantum mechanical expectation value of the correlation energy between two electrons which repel each other via the classical Coulomb interaction, namely
 
 \begin{equation}\label{eq:correlationenergy}
-	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} d{\bf r}_1d{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
+	\langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle = \int_{-\infty}^{\infty} \mathrm{d}{\bf r}_1\mathrm{d}{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
 \end{equation}
 This integral can be solved in closed form, which gives an answer of $5\pi^2/16^2 \approx 0.192765710958777$.
 
@@ -85,7 +85,7 @@ This integral can be solved in closed form, which gives an answer of $5\pi^2/16^
 Gaussian quadrature (hereafter GQ) is a method that solves integrals with excellent results, giving high precision for few integration points compared to simpler integration methods such as Newton-Cotes quadrature. The basic idea behind the method is to approximate the given function by a polynomial of degree $2N-1$ so that we can calculate our integral in the following way:
 
 \begin{equation}
-	I = \int_a^b f(x) dx = \int_a^b W(x) g(x) dx \approx \sum_{i = 0}^{N-1} \omega_i f(x),
+	I = \int_a^b f(x) \mathrm{d}x = \int_a^b W(x) g(x) \mathrm{d}x \approx \sum_{i = 0}^{N-1} \omega_i f(x),
 \end{equation}
 where $\omega$ are the weights given by the weight function $W(x)$ and $x$ are the chosen mesh points. The theory behind GQ is to obtain an arbitrary weight $\omega$, which will not be equally spaced, through the use of orthogonal polynomials, such as Legende and Laguerre polynomials. 
 
@@ -121,38 +121,63 @@ Using \textbf{Gauss-Legendre quadrature} means solving an integral from $- \inft
 Similarly, the Laguerre polynomials are solutions to the differential equation arising in for example the solution of the \textit{radial} Schr\"{o}dinger's equation as described above. The Laguerre polynomials are defined as
 
 \begin{equation}
-	L_n(x) = e^x \frac{d^n}{dx^n} (x^n e^{-x}) \textrm{ , } n = 0,1,2, \dots
+	L_n(x) = e^x \frac{\mathrm{d}^n}{\mathrm{d}x^n} (x^n e^{-x}) \textrm{ , } n = 0,1,2, \dots
 \end{equation}
 Our integral in Eq. (\ref{eq:correlationenergy}) can be rewritten with spherical coordinates to better deal with the infinite limits. Then the integral in Eq. (\ref{eq:correlationenergy}) becomes:
 
 \begin{equation}
-	I = \int \int \int \int  \int \int    r_1^2 r_2^2 \frac{e^{- 2 \alpha (r_1 + r_2)}}{r_{12}} sin \theta_1 sin \theta_2 dr_1  dr_2 d\theta_1 d\theta_2 d\phi_1d\phi_2
+	I = \int \int \int \int  \int \int    r_1^2 r_2^2 \frac{e^{- 2 \alpha (r_1 + r_2)}}{r_{12}} \sin \theta_1 \sin \theta_2 \mathrm{d}r_1  \mathrm{d}r_2 \mathrm{d}\theta_1 \mathrm{d}\theta_2 \mathrm{d}\phi_1\mathrm{d}\phi_2
 \end{equation}
 with
 
-\begin{equation*}
-	\frac{1}{r_{12}}= \frac{1}{\sqrt{r_1^2+r_2^2-2r_1r_2cos(\beta)}},
-\end{equation*}
+\begin{equation}\label{eq:r12}
+	\frac{1}{r_{12}}= \frac{1}{\sqrt{r_1^2+r_2^2-2r_1r_2\cos(\beta)}},
+\end{equation}
 where
 
 \begin{equation*}
-	cos(\beta) = cos(\theta_1)cos(\theta_2)+sin(\theta_1)sin(\theta_2)cos(\phi_1-\phi_2)).
+	\cos(\beta) = \cos(\theta_1)\cos(\theta_2)+\sin(\theta_1)\sin(\theta_2)\cos(\phi_1-\phi_2)).
 \end{equation*}
-The radial part of the integral has limits [0,$\infty$) and we can use Laguerre polynomials with a weight function $W(x) = r^{\alpha} e^{-r}$. But first we need to do a variable change where we substitute $r_1 = u_1/2\alpha$ and $r_2 = u_2/2\alpha$, and $dr_1 = du_1/2\alpha$ and $dr_2 = du_2/2\alpha$. In our case $\alpha = 2$. Thus the integral becomes:
+The radial part of the integral has limits [0,$\infty$) and we can use Laguerre polynomials with a weight function $W(x) = r^{\alpha} e^{-r}$. But first we need to do a variable change where we substitute $r_1 = u_1/2\alpha$ and $r_2 = u_2/2\alpha$, and $\mathrm{d}r_1 = \mathrm{d}u_1/2\alpha$ and $\mathrm{d}r_2 = \mathrm{d}u_2/2\alpha$. In our case $\alpha = 2$. Thus the integral becomes:
 
 \begin{equation}
-	I = \frac{1}{1024} \int_0^{\pi} sin \theta_1 sin \theta_2 d\theta_1 d\theta_2 
-	\int_0^{2\pi} d\phi_1d\phi_2
-	\int_0^{\infty}   du_1  du_2 u_1^2 u_2^2 \frac{e^{- (u_1 + u_2)}}{\sqrt{r_1^2+r_2^2-2r_1r_2cos(\beta)}}  
+	I = \frac{1}{1024} \int_0^{\pi} \sin \theta_1 \sin \theta_2 \mathrm{d}\theta_1 \mathrm{d}\theta_2 
+	\int_0^{2\pi} \mathrm{d}\phi_1\mathrm{d}\phi_2
+	\int_0^{\infty}   \mathrm{d}u_1  \mathrm{d}u_2 u_1^2 u_2^2 \frac{e^{- (u_1 + u_2)}}{\sqrt{r_1^2+r_2^2-2r_1r_2\cos(\beta)}}  
 \end{equation}
 
 
 
 \subsection{Monte Carlo}
-The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations.
+The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations, and multiplied with the Jacobi determinant of the change of variables.
+\begin{equation}
+	-l + 2lx_i,
+\end{equation}
+where $l$ is the limit. The Jacobi determinant for this is $(2l)^6$, as we have 6 variables.
 
-We also want to run the Monte Carlo method by using importance sampling. In the regular Monte Carlo method we use uniformly distributed random numbers, but when considering importance sampling we will instead use exponentially distributed random numbers. We will also switch to spherical coordinates.
-... 
+We also want to run the Monte Carlo method by using importance sampling, as this should give better precision.
+For this case we return to spherical coordinates,
+\begin{equation}
+	I = \int\limits_0^{\infty}\mathrm{d}r_1\mathrm{d}r_2\int\limits_0^{\pi}\mathrm{d}\theta_1\mathrm{d}\theta_2\int\limits_0^{2\pi}\mathrm{d}\phi_1\mathrm{d}\phi_2
+	\frac{r_1^2r_2^2\sin(\theta_1)\sin(\theta_2)}{r_{12}}
+\end{equation}, where $r_{12}$ is given in eq.~(\ref{eq:r12}).
+For $r_i$ we want to use exponentially distributed random numbers.
+%In the regular Monte Carlo method we use uniformly distributed random numbers, but when considering importance sampling we will instead use exponentially distributed random numbers.
+%We will also switch to spherical coordinates.
+This is done by changing variables as follows
+\begin{align*}
+	r_i &\rightarrow -\frac{1}{4}\ln(1-x_i) \\
+	\theta_i &\rightarrow \pi x_i \\
+	\phi_i &\rightarrow 2\pi x_i,
+\end{align*}
+where $x_i$ is a random number between 0 and 1.
+The Jocobi determinant is in this case given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
+
+
+Lastly, we calculate the variance, which is given by 
+\begin{equation}\label{eq:variance}
+	\sigma^2 = \int\limits_{-\infty}^{\infty}\mathrm{d}xP(x)(x-\mu)^2 \,= \,\,<x^2>-<x>^2.
+\end{equation}
 
 
 \section{Results}
