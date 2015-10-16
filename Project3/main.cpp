@@ -29,7 +29,7 @@ double gammln(double xx);
 
 int main()
 {
-     int N = 25; // 25
+     int N = 25;
      double a = -3.0;
      double b = 3.0;
 
@@ -137,7 +137,7 @@ int main()
      clock_t start_MCi, finish_MCi; // declare start and final time
      start_MCi = clock();
 
-     int N_MCi = 100000;
+     int N_MCi = 1000000;
 
      double *z = new double [N_MCi];
      double fx_exp;
