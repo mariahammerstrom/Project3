@@ -1,6 +1,6 @@
 # Project3
 
-In this project we will determine the ground state correlation energy between two electrons in an helium atom by calculating a six-dimensional integral that appears in many quantum mechanical applications.
+In this project we will use different methods to calculate a six-dimensional integral that appears in many quantum mechanical applications.
 
 This project consists of:
 
