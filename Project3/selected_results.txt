@@ -1,0 +1,21 @@
+INPUT:
+N = 25
+N_GL = 25
+N_MC = 50000000
+N_MCi = 100000
+a = -3 (lower limit)
+b = 3 (upper limit)
+
+RESULTS:
+Gauss-Legendre 	0.195816565115188
+Gauss-Laguerre 	0.191740740204317
+Monte Carlo 	0.197151982927005 (variance = 0.00700146680971429)
+Monte Carlo (imp.) 	0.195880328899302 (variance = 0.0145335146984354)
+
+Exact answer 	0.192765710958777
+
+TIME USAGE:
+Gauss-Legendre 	51 seconds
+Gauss-Laguerre 	38 seconds
+Monte Carlo 	23 seconds
+Monte Carlo (imp.) 	0 seconds
