@@ -1,4 +1,8 @@
-//   This is a simple program which tests Gaussian quadrature using Legendre and Laguerre polynomials
+/* PROJECT 2: NUMERICAL INTEGRATION
+ * This is a simple program which calculates a 6-dimensional integral
+ * using Gaussian quadrature with Legendre and Laguerre polynomials,
+ * and Monte Carlo metod with and without importance sampling.
+*/
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -9,6 +13,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <random>
+//#include <libiomp/omp.h>
 
 #define EPS 3.0e-14
 #define MAXIT 10
@@ -18,7 +23,6 @@ using namespace std;
 
 
 // FUNCTIONS
-
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2);
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
 double int_function_spherical_MC(double r1,double r2,double theta1,double theta2,double phi1,double phi2);
@@ -27,24 +31,28 @@ void gauleg(double, double, double *, double *, int);
 double gammln(double xx);
 
 
+// MAIN PROGRAM:
 int main()
 {
-     int N = 25;
-     double a = -3.0;
-     double b = 3.0;
+     #pragma omp parallel
 
      // GAUSS-LEGENDRE
-     clock_t start_gauleg, finish_gauleg; // declare start and final time
-     start_gauleg = clock();
+     clock_t start_gauleg, finish_gauleg;               // declare start and final time for Gauss-Legendre
+     start_gauleg = clock();                            // start the clock
 
-     // Mesh points weights and function values
-     double *x = new double [N];
-     double *w = new double [N];
-     gauleg(a,b,x,w,N); // mesh points and weights
+     int N = 25;                                        // number of integration points
+     double a = -3.0;                                   // lower limit
+     double b = 3.0;                                    // upper limit
+
+     double *x = new double [N];                        // array for mesh points
+     double *w = new double [N];                        // array for weights
+     gauleg(a,b,x,w,N);                                 // calculate mesh points and weights
 
      // Evaluate the integral with the Gauss-Legendre method
-     double int_gauss = 0.; // initialize the sum
-     //#pragma omp for reduction(+:int_gauss) private(i,j,k,l,m,n)
+     double int_gauss = 0.;                             // initialize the sum
+
+     //#pragma omp parallel for reduction(+:int_gauss) private(j,k,l,m,n)
+
      for (int i=0;i<N;i++){
          for (int j = 0;j<N;j++){
              for (int k = 0;k<N;k++){
@@ -54,39 +62,44 @@ int main()
                              int_gauss += w[i]*w[j]*w[k]*w[l]*w[m]*w[n]*int_function(x[i],x[j],x[k],x[l],x[m],x[n]);
                   }}}}}
              }
-     finish_gauleg = clock(); // final time
+
+     finish_gauleg = clock();                           // stop the clock
 
 
      // GAUSS-LAGUERRE-LEGENDRE COMBO
-     int N_GL = 25;
-     clock_t start_gaulag, finish_gaulag; // declare start and final time
-     start_gaulag = clock();
+     clock_t start_gaulag, finish_gaulag;               // declare start and final time for Gauss-Laguerre-Legendre combo
+     start_gaulag = clock();                            // start clock
+
+     int N_GL = 25;                                     // number of integration points
 
      // r
      double alf = 2.0;
-     double *x_r = new double [N_GL];
-     double *w_r = new double [N_GL];
-     gauss_laguerre(x_r,w_r,N_GL,alf);
+     double *x_r = new double [N_GL];                   // array for mesh points
+     double *w_r = new double [N_GL];                   // array for weights
+     gauss_laguerre(x_r,w_r,N_GL,alf);                  // calculate mesh points and weights
 
 
      // PHI
-     double a_phi1 = 0;
-     double b_phi1 = 2*M_PI;
-     double *x_phi = new double [N_GL];
-     double *w_phi = new double [N_GL];
-     gauleg(a_phi1,b_phi1,x_phi,w_phi,N_GL);
+     double a_phi1 = 0;                                 // lower limit
+     double b_phi1 = 2*M_PI;                            // upper limit
+     double *x_phi = new double [N_GL];                 // array for mesh points
+     double *w_phi = new double [N_GL];                 // array for weights
+     gauleg(a_phi1,b_phi1,x_phi,w_phi,N_GL);            // calculate mesh points and weights
 
 
      // THETA
-     double a_theta1 = 0;
-     double b_theta1 = M_PI;
-     double *x_theta = new double [N_GL];
-     double *w_theta = new double [N_GL];
-     gauleg(a_theta1,b_theta1,x_theta,w_theta,N_GL);
+     double a_theta1 = 0;                               // lower limit
+     double b_theta1 = M_PI;                            // upper limit
+     double *x_theta = new double [N_GL];               // array for mesh points
+     double *w_theta = new double [N_GL];               // array for weights
+     gauleg(a_theta1,b_theta1,x_theta,w_theta,N_GL);    // calculate mesh points and weights
 
 
      // Solving the integral
-     double int_spherical = 0.0;
+     double int_spherical = 0.0;                        // initialize the sum
+
+     //#pragma omp parallel for reduction(+:int_spherical) private(j,k,l,m,n)
+
      for (int i=1;i<=N_GL;i++){
          for (int j = 1;j<=N_GL;j++){
              for (int k = 0;k<N_GL;k++){
@@ -97,67 +110,74 @@ int main()
                          }}}}}
              }
 
-     int_spherical = int_spherical/1024.0;
-     finish_gaulag = clock(); // final time
+     int_spherical = int_spherical/1024.0;              // final calculation of integral
+     finish_gaulag = clock();                           // stop the clock
 
 
      // MONTE-CARLO
      // Evaluate the integral with the a crude Monte-Carlo method
-     clock_t start_MC, finish_MC; // declare start and final time
-     start_MC = clock();
+     clock_t start_MC, finish_MC;                       // declare start and final time for Monte Carlo
+     start_MC = clock();                                // start the clock
 
-     //#pragma omp for reduction(+:MCint,MCintsqr2) private(i)
-     default_random_engine generator;
-     uniform_real_distribution<double> distribution(0.0,1.0);
+     default_random_engine generator;                   // start random number generator
+     uniform_real_distribution<double> distribution(0.0,1.0);   // pick type of random distribution
 
-     int N_MC = 50000000;
+     int N_MC = 50000000;                               // number of calculations
      double *y = new double [N_MC];
      double fx;
-     double MCint = 0;
-     double MCintsqr2 = 0;
+     double MCint = 0;                                  // initialize the sum
+     double MCintsqr2 = 0;                              // initialize standard deviation
      double length = 3;
-     double jacobidet = pow((2*length),6);
+     double jacobidet = pow((2*length),6);              // Jacobi determinant
+
+     //#pragma omp parallel for reduction(+:MCint,MCintsqr2) private(j)
 
      for(int i=1;i<=N_MC;i++){
          for(int j=0;j<6;j++){
              y[j] = -length + 2*length*distribution(generator);
          }
+
          fx = int_function(y[0],y[1],y[2],y[3],y[4],y[5]);
          MCint += fx;
          MCintsqr2 += fx*fx;
      }
-     MCint = jacobidet*MCint/((double) N_MC);
-     MCintsqr2 = jacobidet*MCintsqr2/((double) N_MC);
-     double variance = MCintsqr2 - MCint*MCint;
 
-     finish_MC = clock(); // final time
+     MCint = jacobidet*MCint/((double) N_MC);           // finalize integral
+     MCintsqr2 = jacobidet*MCintsqr2/((double) N_MC);   // finalize standard deviation
+     double variance = MCintsqr2 - MCint*MCint;         // calculate variance
+
+     finish_MC = clock();                               // stop the clock
 
 
      // Importance sampling
-     clock_t start_MCi, finish_MCi; // declare start and final time
-     start_MCi = clock();
+     clock_t start_MCi, finish_MCi;                     // declare start and final time for Monte Carlo with importance sampling
+     start_MCi = clock();                               // start the clock
 
-     int N_MCi = 1000000;
+     int N_MCi = 1000000;                               // number of calculations
 
      double *z = new double [N_MCi];
      double fx_exp;
-     double MCint_exp = 0;
-     double MCintsqr2_exp = 0;
-     double jacobidet_exp = 4*pow(acos(-1.),4.0)*1./16;
+     double MCint_exp = 0;                              // initialize the sum
+     double MCintsqr2_exp = 0;                          // initialize standard deviation
+     double jacobidet_exp = 4*pow(acos(-1.),4.0)*1./16; // Jacobi determinant
+
+     //#pragma omp parallel for reduction(+:MCint,MCintsqr2) private(j)
 
      for(int i=1;i<=N_MCi;i++){
          for(int j=0;j<6;j++){
              z[j] = distribution(generator);
          }
+
          fx_exp = int_function_spherical_MC(-0.25*log(1-z[0]),-0.25*log(1-z[1]),M_PI*z[2],M_PI*z[3],2*M_PI*z[4],2*M_PI*z[5]);
          MCint_exp += fx_exp;
          MCintsqr2_exp += fx_exp*fx_exp;
      }
-     MCint_exp = jacobidet_exp*MCint_exp/((double) N_MCi);
-     MCintsqr2_exp = jacobidet_exp*MCintsqr2_exp/((double) N_MCi);
-     double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
 
-     finish_MCi = clock(); // final time
+     MCint_exp = jacobidet_exp*MCint_exp/((double) N_MCi); // finalize integral
+     MCintsqr2_exp = jacobidet_exp*MCintsqr2_exp/((double) N_MCi); // finalize standard deviation
+     double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp; // calculate variance
+
+     finish_MCi = clock();                              // stop the clock
 
 
      // FINAL OUTPUT
@@ -185,15 +205,16 @@ int main()
 
 
      // Clear memory
-     //delete [] x;
-     //delete [] w;
-     //delete [] xgl;
-     //delete [] wgl;
-     //delete [] y;
-     //delete [] z;
      delete [] x;
      delete [] w;
-     //delete [] q;
+     delete [] x_r;
+     delete [] w_r;
+     delete [] x_theta;
+     delete [] w_theta;
+     delete [] x_phi;
+     delete [] w_phi;
+     delete [] y;
+     delete [] z;
 
      return 0;
 }
@@ -202,7 +223,7 @@ int main()
 
 // DEFINITION OF FUNCTIONS:
 
-// INTEGRAL TO BE SOLVED
+// Integral (cartesian):
 double int_function(double x1, double y1, double z1, double x2, double y2, double z2){
     double alpha = 2.0;
     double exp1 = -2*alpha*sqrt(x1*x1 + y1*y1 + z1*z1);
@@ -215,6 +236,7 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
         return exp(exp1+exp2)/deno;
     }
 
+// Integral (spherical without r's):
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
     double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double deno = r1*r1 + r2*r2 - 2*r1*r2*cos_beta;
@@ -225,6 +247,7 @@ double int_function_spherical(double r1,double r2,double theta1,double theta2,do
         return sin(theta1)*sin(theta2)/sqrt(deno);
 }
 
+// Integral (spherical with r's):
 double int_function_spherical_MC(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
     double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);

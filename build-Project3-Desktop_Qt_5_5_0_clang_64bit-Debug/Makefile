@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = 
 CFLAGS        = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I../Project3 -I. -I/Applications/QT/5.5/clang_64/mkspecs/macx-clang
+INCPATH       = -I../Project3 -I. -I/usr/local/include -I/Applications/QT/5.5/clang_64/mkspecs/macx-clang
 QMAKE         = /Applications/QT/5.5/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -540,7 +540,7 @@ compiler_clean:
 
 ####### Compile
 
-main.o: ../Project3/main.cpp 
+main.o: ../Project3/main.cpp /usr/local/include/libiomp/omp.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Project3/main.cpp
 
 ####### Install
