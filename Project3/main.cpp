@@ -40,7 +40,6 @@ int main()
      // Mesh points weights and function values
      double *x = new double [N];
      double *w = new double [N];
-
      gauleg(a,b,x,w,N); // mesh points and weights
 
      // Evaluate the integral with the Gauss-Legendre method
@@ -59,41 +58,42 @@ int main()
 
 
      // GAUSS-LAGUERRE-LEGENDRE COMBO
+     int N_GL = 25;
      clock_t start_gaulag, finish_gaulag; // declare start and final time
      start_gaulag = clock();
 
      // r
      double alf = 2.0;
-     double *xgl1 = new double [N];
-     double *wgl1 = new double [N];
-     gauss_laguerre(xgl1,wgl1,N,alf);
+     double *x_r = new double [N_GL];
+     double *w_r = new double [N_GL];
+     gauss_laguerre(x_r,w_r,N_GL,alf);
 
 
      // PHI
      double a_phi1 = 0;
      double b_phi1 = 2*M_PI;
-     double *d1 = new double [N];
-     double *e1 = new double [N];
-     gauleg(a_phi1,b_phi1,d1,e1,N);
+     double *x_phi = new double [N_GL];
+     double *w_phi = new double [N_GL];
+     gauleg(a_phi1,b_phi1,x_phi,w_phi,N_GL);
 
 
      // THETA
      double a_theta1 = 0;
      double b_theta1 = M_PI;
-     double *f1 = new double [N];
-     double *g1 = new double [N];
-     gauleg(a_theta1,b_theta1,f1,g1,N);
+     double *x_theta = new double [N_GL];
+     double *w_theta = new double [N_GL];
+     gauleg(a_theta1,b_theta1,x_theta,w_theta,N_GL);
 
 
      // Solving the integral
      double int_spherical = 0.0;
-     for (int i=0;i<N;i++){
-         for (int j = 0;j<N;j++){
-             for (int k = 0;k<N;k++){
-                 for (int l = 0;l<N;l++){
-                     for (int m = 0;m<N;m++){
-                         for (int n = 0;n<N;n++){
-                             int_spherical += wgl1[i]*wgl1[j]*e1[k]*e1[l]*g1[m]*g1[n]*int_function_spherical(xgl1[i],xgl1[j],f1[k],f1[l],d1[m],d1[n]);
+     for (int i=1;i<=N_GL;i++){
+         for (int j = 1;j<=N_GL;j++){
+             for (int k = 0;k<N_GL;k++){
+                 for (int l = 0;l<N_GL;l++){
+                     for (int m = 0;m<N_GL;m++){
+                         for (int n = 0;n<N_GL;n++){
+                             int_spherical += w_r[i]*w_r[j]*w_theta[k]*w_theta[l]*w_phi[m]*w_phi[n]*int_function_spherical(x_r[i],x_r[j],x_theta[k],x_theta[l],x_phi[m],x_phi[n]);
                          }}}}}
              }
 
@@ -127,7 +127,7 @@ int main()
          MCintsqr2 += fx*fx;
      }
      MCint = jacobidet*MCint/((double) N_MC);
-     MCintsqr2 = MCintsqr2/((double) N_MC);
+     MCintsqr2 = jacobidet*MCintsqr2/((double) N_MC);
      double variance = MCintsqr2 - MCint*MCint;
 
      finish_MC = clock(); // final time
@@ -154,7 +154,7 @@ int main()
          MCintsqr2_exp += fx_exp*fx_exp;
      }
      MCint_exp = jacobidet_exp*MCint_exp/((double) N_MCi);
-     MCintsqr2_exp = MCintsqr2_exp/((double) N_MCi);
+     MCintsqr2_exp = jacobidet_exp*MCintsqr2_exp/((double) N_MCi);
      double variance_exp = MCintsqr2_exp - MCint_exp*MCint_exp;
 
      finish_MCi = clock(); // final time
@@ -163,6 +163,7 @@ int main()
      // FINAL OUTPUT
      cout << "INPUT:" << endl;
      cout << "N = " << N << endl;
+     cout << "N_GL = " << N_GL << endl;
      cout << "N_MC = " << N_MC << endl;
      cout << "N_MCi = " << N_MCi << endl;
      cout << "a = " << a << " (lower limit)" << endl;
@@ -216,19 +217,19 @@ double int_function(double x1, double y1, double z1, double x2, double y2, doubl
 
 double int_function_spherical(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
     double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
-    double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
+    double deno = r1*r1 + r2*r2 - 2*r1*r2*cos_beta;
 
-    if(deno < pow(10.,-6.) || isnan(deno)){
+    if(deno < pow(10.,-10.) || deno<0){
         return 0;}
     else
-        return sin(theta1)*sin(theta2)/deno;
+        return sin(theta1)*sin(theta2)/sqrt(deno);
 }
 
 double int_function_spherical_MC(double r1,double r2,double theta1,double theta2,double phi1,double phi2){
     double cos_beta = cos(theta1)*cos(theta2) + sin(theta1)*sin(theta2)*cos(phi1 - phi2);
     double deno = sqrt(r1*r1 + r2*r2 - 2*r1*r2*cos_beta);
 
-    if(deno < pow(10.,-6.) || isnan(deno)){
+    if(deno < pow(10.,-6.)  || isnan(deno)){
         return 0;}
     else
         return r1*r1*r2*r2*sin(theta1)*sin(theta2)/deno;
@@ -319,8 +320,8 @@ void gauss_laguerre(double *x, double *w, int n, double alf)
             if (fabs(z-z1) <= EPS) break;
         }
         if (its > MAXIT) cout << "too many iterations in gaulag" << endl;
-        x[i-1]=z;
-        w[i-1] = -exp(gammln(alf+n)-gammln((double)n))/(pp*n*p2);
+        x[i]=z;
+        w[i] = -exp(gammln(alf+n)-gammln((double)n))/(pp*n*p2);
     }
 }
 
