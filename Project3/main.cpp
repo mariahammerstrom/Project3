@@ -178,10 +178,10 @@ int main()
      cout << endl << "Exact answer " << "\t" << 5*M_PI*M_PI/(16*16) << endl << endl;
 
      cout << "TIME USAGE:" << endl;
-     cout << "Gauss-Legendre " << "\t" << ((finish_gauleg - start_gauleg)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
-     cout << "Gauss-Laguerre " << "\t" << ((finish_gaulag - start_gaulag)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
-     cout << "Monte Carlo " << "\t" << ((finish_MC - start_MC)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
-     cout << "Monte Carlo (imp.) " << "\t" << ((finish_MCi - start_MCi)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Gauss-Legendre " << "\t" << ((float)(finish_gauleg - start_gauleg)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Gauss-Laguerre " << "\t" << ((float)(finish_gaulag - start_gaulag)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Monte Carlo " << "\t" << ((float)(finish_MC - start_MC)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
+     cout << "Monte Carlo (imp.) " << "\t" << ((float)(finish_MCi - start_MCi)/CLOCKS_PER_SEC) << " seconds" << endl; // print elapsed time
 
 
      // Clear memory
