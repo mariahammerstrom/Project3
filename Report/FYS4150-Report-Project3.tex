@@ -116,7 +116,7 @@ We will solve the integral in both linear and spherical coordinates, which means
 
 \subsubsection{Gauss-Legendre quadrature}
 
-First we want to compute the six-dimensional integral in Eq. (\ref{eq:correlationenergy}) with respect to the coordinates $x_1, x_2, y_1, y_2, z_1, z_2$ with limits $[-\infty, \infty]$. The limits will be adjusted to finite limits when doing the numerical calculation, as computers cannot deal with infinite. Because the weight function of the Legendre polynomial is $W(x) = 1$, we can use our integral as is, without any rewriting.
+First we want to compute the six-dimensional integral in Eq. (\ref{eq:correlationenergy}) with respect to the coordinates $x_1, x_2, y_1, y_2, z_1, z_2$ with limits $[-\infty, \infty]$, see eq.~(\ref{eq:cartesian}). The limits will be adjusted to finite limits when doing the numerical calculation, as computers cannot deal with infinite. Because the weight function of the Legendre polynomial is $W(x) = 1$, we can use our integral as is, without any rewriting.
 
 To find out how we can substitute the infinite limits with finite limits without losing too much precision, we plot the single-particle wave function $e^{-\alpha r_i}$ and inspect when it reaches a value close to zero. This occurs at approximately $r_i \approx 3$ as shown in Fig.~\ref{fig:integrand}. We therefore used the limits [-3,3].
 
