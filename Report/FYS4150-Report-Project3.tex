@@ -33,7 +33,8 @@
 \maketitle
 
 \begin{abstract}
-	\noindent \lipsum[1]
+	\noindent We study the precision and efficiency of four different integration methods for a 6-dimensional integral with a known analytical solution: Gaussian quadrature using Legendre and Laguerre polynomials, and Monte Carlo integration with and without importance sampling. The Monte Carlo method \textit{with} importance sampling proved to be the superior method, both when it came to precision and speed. 
+	%\lipsum[1]
 	\vspace*{2ex}
 	
 	\noindent \textbf{Github:} \textit{https://github.com/mariahammerstrom/Project3}
@@ -205,23 +206,27 @@ The results for the various methods are collected here with three leading digits
 \begin{center}
 \begin{tabular}{ l l l l l}\hline
 	Method 									& N	 				&I			&$\sigma$				& $t$ (s) \\ \hline
-	Gauss-Legendre 							& 25 					& 0.196		& -						& 51 \\
+	Gauss-Legendre 							& 25 					& 0.196		& -						& 50 \\
 	Gauss-Laguerre 							& 25					& 0.192		& -						& 38 \\
 	Monte Carlo 								& 5 $\cdot 10^7$ 		& 0.197		& 7.00147 $\cdot 10^{-3}$		& 23 \\
-	Monte Carlo*					 			& 1 $\cdot 10^5$		& 0.196		& 1.45335 $\cdot 10^{-2}$		& 0 \\
+	Monte Carlo*					 			& 1 $\cdot 10^6$		& 0.193		& 1.73337 $\cdot 10^{-2}$		& 0 \\
 	\hline
 \end{tabular}
 \end{center}
 where * denotes Monte Carlo method with importance sampling. The $N$ values given here are the minimal values we found to give satisfying results. The exact solution with three leading digits is 0.193.
 
-The time it takes to run Gauss-Legendre and Gauss-Laguerre increases rapidly with $N$, making these methods incredibly slow. Testing out different values of $N$ showed that the result from Gauss-Legendre was very unstable with changing $N$, while Gauss-Laguerre improved for larger $N$.
+The result from a run of the code can be seen in the file \verb@selected_results.txt@.
 
-COMMENTS.
 
 
 
 \section{Conclusions}
-...
+
+From the results it is obvious that Monte Carlo with importance sampling is the preferred method. The result is excellent and the time spent to run the code is incredibly low.
+
+The result from the regular Monte Carlo method is not very impressive. For lower $N$ the result becomes too small, and for larger $N$ the code takes too long to give a result.
+
+The time it takes to run Gauss-Legendre and Gauss-Laguerre increases rapidly with $N$, making these methods unbearably slow. Testing out different values of $N$ showed that the result from Gauss-Legendre was very unstable with changing $N$, while Gauss-Laguerre improved for larger $N$. But the improvement in precision was low compared to the increase in time, so we limited the calculation to $N = 25$. 
 
 
 
@@ -230,7 +235,10 @@ COMMENTS.
 \section{List of codes}
 
 The codes developed for this project are:\\
-...
+
+\noindent \verb@main.cpp@ -- main program, C++
+
+\noindent \verb@plotting.m@ -- plotting program, MATLAB
 
 \end{multicols}
 

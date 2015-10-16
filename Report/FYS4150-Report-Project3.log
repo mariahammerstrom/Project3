@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.7.15)  16 OCT 2015 13:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.7.15)  16 OCT 2015 13:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -516,44 +516,44 @@ LaTeX Font Info:    Try loading font information for U+txsyc on input line 33.
 (/usr/local/texlive/2014/texmf-dist/tex/latex/txfonts/utxsyc.fd
 File: utxsyc.fd 2000/12/15 v3.1
 )
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 47.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 48.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 )
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <12> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 47.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 48.
 LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10> not available
-(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 84.
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 85.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 109.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 110.
  [1
 
 {/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 <integrand.png, id=16, 562.1pt x 421.575pt>
 File: integrand.png Graphic file (type png)
  <use integrand.png>
-Package pdftex.def Info: integrand.png used on input line 116.
+Package pdftex.def Info: integrand.png used on input line 117.
 (pdftex.def)             Requested size: 256.0748pt x 192.05493pt.
-LaTeX Font Info:    Try loading font information for OT1+txss on input line 117
+LaTeX Font Info:    Try loading font information for OT1+txss on input line 118
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/txfonts/ot1txss.fd
 File: ot1txss.fd 2000/12/15 v3.1
 )
 LaTeX Font Info:    Font shape `OT1/txss/m/n' will be
-(Font)              scaled to size 8.54997pt on input line 117.
+(Font)              scaled to size 8.54997pt on input line 118.
 LaTeX Font Info:    Font shape `OT1/txss/bx/n' in size <9> not available
-(Font)              Font shape `OT1/txss/b/n' tried instead on input line 117.
+(Font)              Font shape `OT1/txss/b/n' tried instead on input line 118.
 LaTeX Font Info:    Font shape `OT1/txss/b/n' will be
-(Font)              scaled to size 8.54997pt on input line 117.
-LaTeX Font Info:    Try loading font information for OT1+txtt on input line 120
+(Font)              scaled to size 8.54997pt on input line 118.
+LaTeX Font Info:    Try loading font information for OT1+txtt on input line 121
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/txfonts/ot1txtt.fd
 File: ot1txtt.fd 2000/12/15 v3.1
 )
-Overfull \hbox (25.84178pt too wide) detected at line 151
+Overfull \hbox (25.84178pt too wide) detected at line 152
 \OML/txmi/m/it/10 I \OT1/txr/m/n/10 = [] [][] [] \OML/txmi/m/it/10 ^^R[] [] ^^R
 []\OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^R[]\OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^
 R[] [][] \OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^^[]\OT1/txr/m/n/10 d\OML/txmi/m/i
@@ -562,7 +562,7 @@ i/m/it/10 u[]u[]u[][]:
  []
 
 
-Overfull \hbox (25.7758pt too wide) detected at line 158
+Overfull \hbox (25.7758pt too wide) detected at line 159
 \OML/txmi/m/it/10 I \OT1/txr/m/n/10 = [] [][] [] \OML/txmi/m/it/10 ^^R[] [] ^^R
 []\OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^R[]\OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^
 R[] [][] \OT1/txr/m/n/10 d\OML/txmi/m/it/10 ^^^[]\OT1/txr/m/n/10 d\OML/txmi/m/i
@@ -570,28 +570,33 @@ t/10 ^^^[] [][] \OT1/txr/m/n/10 d\OML/txmi/m/it/10 u[]\OT1/txr/m/n/10 d\OML/txm
 i/m/it/10 u[][]:
  []
 
-[2 <./integrand.png (PNG copy)>] [3] (./FYS4150-Report-Project3.aux) ) 
+[2 <./integrand.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 237--238
+
+ []
+
+[3] (./FYS4150-Report-Project3.aux) ) 
 Here is how much of TeX's memory you used:
  6543 strings out of 493117
  93602 string characters out of 6135433
- 280390 words of memory out of 5000000
+ 279390 words of memory out of 5000000
  9873 multiletter control sequences out of 15000+600000
  56730 words of font info for 129 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,8n,40p,562b,468s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/loc
-al/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2014
-/texmf-dist/fonts/type1/public/txfonts/rtxi.pfb></usr/local/texlive/2014/texmf-
-dist/fonts/type1/public/txfonts/rtxmi.pfb></usr/local/texlive/2014/texmf-dist/f
-onts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2014/texmf-dist/fonts/ty
-pe1/public/txfonts/txex.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/pub
-lic/txfonts/txsy.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/txf
-onts/txtt.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/helvetic/uhvb
-8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb
-></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/loc
-al/texlive/2014/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive
-/2014/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on FYS4150-Report-Project3.pdf (3 pages, 92680 bytes).
+{/usr/local/texlive/2014/texmf-dist/fonts/
+enc/dvips/base/8r.enc}</usr/local/texlive/2014/texmf-dist/fonts/type1/public/tx
+fonts/rtxi.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/txfonts/r
+txmi.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/txfonts/rtxr.pf
+b></usr/local/texlive/2014/texmf-dist/fonts/type1/public/txfonts/txex.pfb></usr
+/local/texlive/2014/texmf-dist/fonts/type1/public/txfonts/txsy.pfb></usr/local/
+texlive/2014/texmf-dist/fonts/type1/public/txfonts/txtt.pfb></usr/local/texlive
+/2014/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2014/t
+exmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2014/texmf-d
+ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/
+type1/urw/times/utmr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/
+times/utmri8a.pfb>
+Output written on FYS4150-Report-Project3.pdf (3 pages, 94009 bytes).
 PDF statistics:
  62 PDF objects out of 1000 (max. 8388607)
  44 compressed objects within 1 object stream
