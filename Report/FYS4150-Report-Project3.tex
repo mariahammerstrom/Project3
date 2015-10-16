@@ -171,14 +171,14 @@ The function \verb@gauss_laguerre@ to calculate the weights and mesh points of t
 \subsection{Monte Carlo}
 The Monte Carlo method is a statistical simulation method which can be used for systems that are described by their probability distribution functions (PDFs). The Monte Carlo method proceeds by random samplings from the PDF. The final result is taken as an average over the number of simulations, and multiplied with the Jacobi determinant of the change of variables.
 \begin{equation}
-	-l + 2lx_i,
+	r_{i,j} = -l + 2lx_{i,j};\,i=1,2;\,j=1,2,3.
 \end{equation}
-where $l$ is the limit. The Jacobi determinant for this is $(2l)^6$, as we have 6 variables.
+$x_{i,j}$ is a uniformly distributed random number between 0 and 1. Thus $r_{i,j}$ goes from $-l$ to $l$. The Jacobi determinant for this is $(2l)^6$, as we have 6 variables. We solve the integral as it appears with $x_1,\,x_2,\,y_1,\,y_2,\,z_1,\,z_2$.
 
-We also want to run the Monte Carlo method by using importance sampling, as this should give better precision.
-For this case we return to spherical coordinates,
+To get better precision we also run the Monte Carlo method by using importance sampling. For this case we return to spherical coordinates,
 \begin{equation}
 	I = \int\limits_0^{\infty}\mathrm{d}r_1\mathrm{d}r_2\int\limits_0^{\pi}\mathrm{d}\theta_1\mathrm{d}\theta_2\int\limits_0^{2\pi}\mathrm{d}\phi_1\mathrm{d}\phi_2
+<<<<<<< HEAD
 	\frac{r_1^2r_2^2\sin(\theta_1)\sin(\theta_2)}{r_{12}},
 \end{equation}
 where $r_{12}$ is given in eq.~(\ref{eq:r12}).
@@ -187,18 +187,31 @@ For $r_i$ we want to use exponentially distributed random numbers.
 %In the regular Monte Carlo method we use uniformly distributed random numbers, but when considering importance sampling we will instead use exponentially distributed random numbers.
 %We will also switch to spherical coordinates.
 This is done by changing variables as follows
+=======
+	\frac{r_1^2r_2^2\sin\theta_1\sin\theta_2}{r_{12}},
+\end{equation}
+where $r_{12}$ is given in eq.~(\ref{eq:r12}). The PDF of $r_i$ is given by
+\begin{equation}
+	p(r_i)=4\mathrm{e}^{-4r_i},
+\end{equation}
+so we want to use exponentially distributed random numbers. This is done by changing variables as follows
+>>>>>>> origin/master
 \begin{align*}
 	r_i &\rightarrow -\frac{1}{4}\ln(1-x_i) \\
 	\theta_i &\rightarrow \pi x_i \\
 	\phi_i &\rightarrow 2\pi x_i,
 \end{align*}
 where $x_i$ is a random number between 0 and 1.
+<<<<<<< HEAD
 The Jacobi determinant is in this case given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
+=======
+The Jacobi determinant is then given by $(1/4)^2\times\pi^2\times(2\pi)^2 = \pi^4/4$.
+>>>>>>> origin/master
 
 
 Lastly, we calculate the variance, which is given by 
 \begin{equation}\label{eq:variance}
-	\sigma^2 = \int\limits_{-\infty}^{\infty}\mathrm{d}xP(x)(x-\mu)^2 \,= \,\,<x^2>-<x>^2.
+	\sigma^2 = \int\limits_{-\infty}^{\infty}\mathrm{d}xP(x)(x-\mu)^2 = \langle x^2\rangle-\langle x\rangle^2.
 \end{equation}
 
 
